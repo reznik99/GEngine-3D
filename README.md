@@ -1,7 +1,8 @@
 # GEngine-3D
 OpenGL 3D engine using JLWGL 
 
-<ul> To be implemented:
+## To be implemented:
+<ul> 
   <li>Water (semi-implemented) shader</li>
   <li>Shadow shader</li>
   <li>Skybox</li>
@@ -12,7 +13,8 @@ OpenGL 3D engine using JLWGL
   <li>Networking?</li>
 </ul>
 
-<ul> Implemented features:
+## Implemented features:
+<ul> 
   <li>Simple OBJ loader</li>
   <li>Z-buffer</li>
   <li>Terrain Generation from HeightMap</li>
