@@ -10,6 +10,7 @@ import org.lwjgl.util.vector.Vector3f;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
@@ -59,32 +60,29 @@ public class Driver {
 		stall.getTexture().setShineDamper(50);
 
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
-		stall.getTexture().setReflectivity(10);
-		stall.getTexture().setShineDamper(10);
 
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
-		stall.getTexture().setReflectivity(10);
-		stall.getTexture().setShineDamper(10);
 
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("flower")));
-		stall.getTexture().setReflectivity(10);
-		stall.getTexture().setShineDamper(10);
 		
-		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("rock", loader), new ModelTexture(loader.loadTexture("metal")));
-		stall.getTexture().setReflectivity(10);
-		stall.getTexture().setShineDamper(10);
+		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("rock", loader), new ModelTexture(loader.loadTexture("water")));
 		
 		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("tower1", loader), new ModelTexture(loader.loadTexture("tower1")));
-		stall.getTexture().setReflectivity(10);
-		stall.getTexture().setShineDamper(10);
 		
 		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("building1", loader), new ModelTexture(loader.loadTexture("metal")));
 		stall.getTexture().setReflectivity(10);
 		stall.getTexture().setShineDamper(10);
 		
-		TexturedModel water = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("metal")));
-		dragon.getTexture().setReflectivity(10);
-		dragon.getTexture().setShineDamper(10);
+		TexturedModel water = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("water")));
+		water.getTexture().setReflectivity(10);
+		water.getTexture().setShineDamper(10);
+		
+		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("alliance_statue", loader), new ModelTexture(loader.loadTexture("alliance_statue")));
+		statueModel.getTexture().setReflectivity(10);
+		statueModel.getTexture().setShineDamper(10);
+		
+		TexturedModel player = new TexturedModel(OBJLoader.loadObjModel("Chogall", loader), new ModelTexture(loader.loadTexture("Chogall")));
+
 
 		Random rand = new Random();
 		for(int i=0; i<200; i++) {
@@ -105,7 +103,10 @@ public class Driver {
 		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,1);
 		towerEntity.setScale(6f);
 		Entity stallEntity = new Entity(stall, new Vector3f(20,0,20), 0,0,0,1);
+		Entity statueEntity = new Entity(statueModel, new Vector3f(150,0,20),0,90,0,0.2f);
 		
+
+		entities.add(statueEntity);
 		entities.add(buildingEntity);
 		entities.add(towerEntity);
 		entities.add(stallEntity);
@@ -114,14 +115,19 @@ public class Driver {
 		Entity dragonEntity = new Entity(dragon, new Vector3f(10,0,20), 0, 180, 0, 0.5f);
 		Entity waterEntity = new Entity(water, new Vector3f(200,-2f,200), 0, 0 ,0,200);
 		fancyEntities.add(dragonEntity);
-		fancyEntities.add(waterEntity);
-
+		entities.add(waterEntity);
+		
+		//player
+		Entity playerEntity = new Player(player, new Vector3f(0,0,10),0,0,0,3f);
+		entities.add(playerEntity);
+		
 		//camera and light
 		Light light = new Light(new Vector3f(50,2000,50), new Vector3f(1,1,0.75f));
-		Camera camera = new Camera();
+		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer();
 		while(!Display.isCloseRequested()){
 			camera.move();//allow movement
+			((Player)playerEntity).move();
 			dragonEntity.increaseRotation(0, .5f, 0);
 			//game update
 			for(Entity e : entities)
