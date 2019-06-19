@@ -146,7 +146,7 @@ public class Driver {
 		while(!Display.isCloseRequested()){
 			//update entities
 			camera.move();
-			((Player)playerEntity).move();
+			((Player)playerEntity).move(terrain);
 			//light.update();
 			dragonEntity.increaseRotation(0, .5f, 0);
 			
