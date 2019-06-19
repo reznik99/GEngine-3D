@@ -7,6 +7,8 @@ import java.util.Random;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
 
+import audio.AudioManager;
+import audio.Source;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
@@ -81,14 +83,13 @@ public class Driver {
 		playerModel.getTexture().setReflectivity(0.2f);
 		playerModel.getTexture().setShineDamper(5);
 		
-		TexturedModel undeadModel = new TexturedModel(OBJLoader.loadObjModel("bonfire", loader), new ModelTexture(loader.loadTexture("bonfire")));
-		playerModel.getTexture().setReflectivity(0.2f);
-		playerModel.getTexture().setShineDamper(5);
+		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("bonfire", loader), new ModelTexture(loader.loadTexture("bonfire")));
 		
 		TexturedModel statue2Model = new TexturedModel(OBJLoader.loadObjModel("lotharStatue", loader), new ModelTexture(loader.loadTexture("lotharStatue1")));
-		playerModel.getTexture().setReflectivity(0.2f);
-		playerModel.getTexture().setShineDamper(5);
+		statue2Model.getTexture().setReflectivity(0.2f);
+		statue2Model.getTexture().setShineDamper(5);
 		
+		TexturedModel fallenTreeModel = new TexturedModel(OBJLoader.loadObjModel("fallenRedridgeTree", loader), new ModelTexture(loader.loadTexture("fallenRedridgeTree")));
 		//generate Random Entities
 		Random rand = new Random();
 		for(int i=0; i<800; i++) {
@@ -102,11 +103,11 @@ public class Driver {
 			}
 			Vector3f position = new Vector3f(x , y, z);
 			TexturedModel model = tree;
-			if(i<50)
-				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : grass;
+			if(i<150)
+				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
 			
 			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360,0,1);
-			entity.setScale(rand.nextFloat()*1.5f + 0.4f);
+			entity.setScale(rand.nextFloat()*1f + 1f);
 			entities.add(entity);
 		}
 		
@@ -116,11 +117,13 @@ public class Driver {
 		Entity towerEntity2 = new Entity(tower, new Vector3f(650, terrain.getHeightAt(650, 300), 300), 0,0,0,8f);
 		Entity stallEntity = new Entity(stall, new Vector3f(20,0,20), 0,0,0,1);
 		Entity statueEntity = new Entity(statueModel, new Vector3f(465,terrain.getHeightAt(465, 270),270),0,90,0,0.2f);
-		Entity undeadEntity = new Entity(undeadModel, new Vector3f(223,terrain.getHeightAt(223, 198),198),0,90,0,2.5f);
+		Entity bonfireEntity = new Entity(bonfireModel, new Vector3f(223,terrain.getHeightAt(223, 198),198),0,90,0,2.5f);
 		Entity statueEntity3 = new Entity(statue2Model, new Vector3f(291,terrain.getHeightAt(291, 463)-5,463),0,90,0,2f);
-		
+		Entity fallenTreeEntity = new Entity(fallenTreeModel, new Vector3f(341,terrain.getHeightAt(341, 240),240),0,0,0,5f);
+
+		entities.add(fallenTreeEntity);
 		entities.add(statueEntity3);
-		entities.add(undeadEntity);
+		entities.add(bonfireEntity);
 		entities.add(towerEntity2);
 		entities.add(statueEntity);
 		entities.add(buildingEntity);
@@ -143,8 +146,18 @@ public class Driver {
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer();
 		
+		//audio
+		AudioManager.init();
+		int buffer = AudioManager.loadSound("audio/bonfire.wav");
+		Source bonFireSource = new Source();
+		bonFireSource.setVolume(3);
+		bonFireSource.setLooping(true);
+		bonFireSource.setPosition(bonfireEntity.getPosition());
+		bonFireSource.play(buffer);
+		
 		while(!Display.isCloseRequested()){
 			//update entities
+			AudioManager.setListenerData(playerEntity.getPosition().x, playerEntity.getPosition().y, playerEntity.getPosition().z);
 			camera.move();
 			((Player)playerEntity).move(terrain);
 			//light.update();
@@ -166,6 +179,7 @@ public class Driver {
 		}
 
 		//clean up
+		bonFireSource.delete();
 		loader.cleanUp();
 		renderer.cleanUp();
 		DisplayManager.closeDisplay();
