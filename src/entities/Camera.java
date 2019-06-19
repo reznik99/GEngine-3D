@@ -68,6 +68,11 @@ public class Camera {
 			float angleChange = Mouse.getDX() * 0.3f;
 			this.angleAroundPlayer -= angleChange;
 		}
+		if(Mouse.isButtonDown(1)) {
+			player.setRotY(player.getRotY() + this.angleAroundPlayer);
+			this.angleAroundPlayer = 0;
+			player.setStrafe(true);
+		}
 	}
 	
 	

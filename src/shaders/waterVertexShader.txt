@@ -15,8 +15,8 @@ uniform mat4 projectionMatrix;		// where the default location of everything is
 uniform mat4 viewMatrix;			// camera's perspective
 uniform vec3 lightPosition;
 
-const float density = 0.007;
-const float gradient = 4;
+const float density = 0.005;
+const float gradient = 8;
 
 void main(void){
 
