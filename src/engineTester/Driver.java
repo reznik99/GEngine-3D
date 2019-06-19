@@ -32,7 +32,7 @@ public class Driver {
 
 		DisplayManager.createDisplay();
 
-		Loader loader = new Loader();
+		Loader loader = new Loader(); //loads up textures and models in VBOs to VAOs
 
 		// *********TERRAIN TEXTURE STUFF***********
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
@@ -70,20 +70,20 @@ public class Driver {
 		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("tower1", loader), new ModelTexture(loader.loadTexture("tower1")));
 		
 		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("building1", loader), new ModelTexture(loader.loadTexture("metal")));
-		stall.getTexture().setReflectivity(10);
-		stall.getTexture().setShineDamper(10);
 		
 		TexturedModel water = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("water")));
 		water.getTexture().setReflectivity(10);
 		water.getTexture().setShineDamper(10);
 		
 		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("alliance_statue", loader), new ModelTexture(loader.loadTexture("alliance_statue")));
-		statueModel.getTexture().setReflectivity(10);
-		statueModel.getTexture().setShineDamper(10);
+		statueModel.getTexture().setReflectivity(1);
+		statueModel.getTexture().setShineDamper(5);
 		
-		TexturedModel player = new TexturedModel(OBJLoader.loadObjModel("Chogall", loader), new ModelTexture(loader.loadTexture("Chogall")));
-
-
+		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("Chogall", loader), new ModelTexture(loader.loadTexture("Chogall")));
+		playerModel.getTexture().setReflectivity(0.2f);
+		playerModel.getTexture().setShineDamper(5);
+		
+		//generate Random Entities
 		Random rand = new Random();
 		for(int i=0; i<200; i++) {
 			float x = rand.nextFloat()*240;
@@ -97,47 +97,51 @@ public class Driver {
 			entity.setScale(rand.nextFloat()*1.5f + 0.4f);
 			entities.add(entity);
 		}
-		Entity buildingEntity = new Entity(building, new Vector3f(125, terrain.getHeightAt(125, 205), 205), 0,0,0,1);
-		buildingEntity.setScale(0.25f);
-		buildingEntity.setRotY(180);
-		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,1);
-		towerEntity.setScale(6f);
+		
+		//hardCoded Entities
+		Entity buildingEntity = new Entity(building, new Vector3f(125, terrain.getHeightAt(125, 205), 205), 0,180,0,0.25f);
+		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,6f);
 		Entity stallEntity = new Entity(stall, new Vector3f(20,0,20), 0,0,0,1);
 		Entity statueEntity = new Entity(statueModel, new Vector3f(150,0,20),0,90,0,0.2f);
-		
+		Entity waterEntity = new Entity(water, new Vector3f(200,-2f,200), 0, 0 ,0,200);
 
 		entities.add(statueEntity);
 		entities.add(buildingEntity);
 		entities.add(towerEntity);
 		entities.add(stallEntity);
+		entities.add(waterEntity);
 		
 		//fancy entities
 		Entity dragonEntity = new Entity(dragon, new Vector3f(10,0,20), 0, 180, 0, 0.5f);
-		Entity waterEntity = new Entity(water, new Vector3f(200,-2f,200), 0, 0 ,0,200);
 		fancyEntities.add(dragonEntity);
-		entities.add(waterEntity);
+		
 		
 		//player
-		Entity playerEntity = new Player(player, new Vector3f(0,0,10),0,0,0,3f);
+		Entity playerEntity = new Player(playerModel, new Vector3f(0,0,10),0,0,0,3f);
 		entities.add(playerEntity);
 		
 		//camera and light
-		Light light = new Light(new Vector3f(50,2000,50), new Vector3f(1,1,0.75f));
+		Light light = new Light(new Vector3f(65,40,75), new Vector3f(1,1,0.75f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer();
+		
 		while(!Display.isCloseRequested()){
-			camera.move();//allow movement
+			//update entities
+			camera.move();
 			((Player)playerEntity).move();
 			dragonEntity.increaseRotation(0, .5f, 0);
-			//game update
+			
+			//Load Entities for rendering
 			for(Entity e : entities)
 				renderer.processEntity(e);
 			for(Entity e : fancyEntities)
 				renderer.processFancyEntity(e);
 			
-			renderer.processTerrain(terrain); //render terrain
-			renderer.render(light, camera);	  //render entities
-
+			//render terrain
+			renderer.processTerrain(terrain); 
+			//render entities
+			renderer.render(light, camera);	  
+			//update
 			DisplayManager.updateDisplay();
 
 		}

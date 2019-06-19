@@ -9,8 +9,8 @@ import tools.Maths;
 
 public class FancyShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/shaders/waterVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/shaders/waterFragmentShader.txt";
+	private static final String VERTEX_FILE = "/shaders/waterVertexShader.txt";
+	private static final String FRAGMENT_FILE = "/shaders/waterFragmentShader.txt";
 	
 	private int location_transformationMatrix;
 	private int location_projectionMatrix;
