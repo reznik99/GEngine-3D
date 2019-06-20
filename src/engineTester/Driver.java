@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Random;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import audio.AudioManager;
 import audio.Source;
@@ -25,6 +28,10 @@ import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
 import textures.TerrainTexturePack;
+import water.WaterFrameBuffers;
+import water.WaterRenderer;
+import water.WaterShader;
+import water.WaterTile;
 
 public class Driver {
 
@@ -45,10 +52,7 @@ public class Driver {
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap");
 		
-
 		List<Entity> entities = new ArrayList<Entity>();
-		List<Entity> fancyEntities = new ArrayList<Entity>();
-
 
 		/* LOAD Models and Textures */
 		TexturedModel dragon = new TexturedModel(OBJLoader.loadObjModel("dragon", loader), new ModelTexture(loader.loadTexture("metal")));
@@ -71,9 +75,9 @@ public class Driver {
 		
 		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("building1", loader), new ModelTexture(loader.loadTexture("metal")));
 		
-		TexturedModel water = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("water")));
-		water.getTexture().setReflectivity(1);
-		water.getTexture().setShineDamper(5);
+		TexturedModel waterModel = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("water")));
+		waterModel.getTexture().setReflectivity(1);
+		waterModel.getTexture().setShineDamper(5);
 		
 		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("alliance_statue", loader), new ModelTexture(loader.loadTexture("alliance_statue")));
 		statueModel.getTexture().setReflectivity(1);
@@ -130,19 +134,12 @@ public class Driver {
 		entities.add(towerEntity);
 		entities.add(stallEntity);
 		
-		
-		//fancy entities
-		Entity dragonEntity = new Entity(dragon, new Vector3f(10,0,20), 0, 180, 0, 0.5f);
-		Entity waterEntity = new Entity(water, new Vector3f(400,-2.5f,400), 0, 0 ,0,400);
-		fancyEntities.add(dragonEntity);
-		fancyEntities.add(waterEntity);
-		
 		//player
-		Entity playerEntity = new Player(playerModel, new Vector3f(157, 0, 236),0,0,0,3f);
+		Entity playerEntity = new Player(playerModel, new Vector3f(220,terrain.getHeightAt(223, 198)+10,198),0,0,0,3f);
 		entities.add(playerEntity);
 		
 		//camera and light
-		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+10,198), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+13,198), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer();
 		
@@ -155,24 +152,50 @@ public class Driver {
 		bonFireSource.setPosition(bonfireEntity.getPosition());
 		bonFireSource.play(buffer);
 		
+		//water stuff
+		WaterFrameBuffers fbos = new WaterFrameBuffers();
+		WaterShader waterShader = new WaterShader();
+		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
+		WaterTile water = new WaterTile(400, 400, -2.5f);
+		
+		Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
+		
 		while(!Display.isCloseRequested()){
 			//update entities
-			AudioManager.setListenerData(playerEntity.getPosition().x, playerEntity.getPosition().y, playerEntity.getPosition().z);
+			AudioManager.setListenerData(
+					playerEntity.getPosition().x, 
+					playerEntity.getPosition().y, 
+					playerEntity.getPosition().z);
 			camera.move();
 			((Player)playerEntity).move(terrain);
 			//light.update();
-			dragonEntity.increaseRotation(0, .5f, 0);
 			
 			//Load Entities for rendering
 			for(Entity e : entities)
 				renderer.processEntity(e);
-			for(Entity e : fancyEntities)
-				renderer.processFancyEntity(e);
+			renderer.processTerrain(terrain);
 			
-			//render terrain
-			renderer.processTerrain(terrain); 
-			//render entities
-			renderer.render(light, camera);	  
+			/* REFLECTION */
+			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
+			fbos.bindReflectionFrameBuffer();
+			
+			float distance = 2 * (camera.getPosition().y - water.getHeight());
+			camera.getPosition().y -= distance;
+			camera.setPitch(-camera.getPitch());
+			
+			renderer.render(light, camera, reflectionClipPlane, false);
+			
+			camera.getPosition().y += distance;
+			camera.setPitch(-camera.getPitch());
+			
+			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
+			fbos.unbindCurrentFrameBuffer();
+			/* END REFLECTION */
+
+			//render and clear buffers
+			renderer.render(light, camera, reflectionClipPlane, true);	 
+			//render water
+			waterRenderer.render(water, camera);
 			//update
 			DisplayManager.updateDisplay();
 
@@ -180,6 +203,7 @@ public class Driver {
 
 		//clean up
 		bonFireSource.delete();
+		waterShader.cleanUp();
 		loader.cleanUp();
 		renderer.cleanUp();
 		DisplayManager.closeDisplay();

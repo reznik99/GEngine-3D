@@ -9,15 +9,17 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import models.TexturedModel;
-import shaders.FancyShader;
 import shaders.StaticShader;
 import shaders.TerrainShader;
 import terrains.Terrain;
+import water.WaterRenderer;
+import water.WaterShader;
 
 /**
  * Master renderer, contains all constants for all 
@@ -40,11 +42,7 @@ public class MasterRenderer {
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader = new TerrainShader();
 	
-	private FancyRenderer fancyRenderer;
-	private FancyShader fancyShader = new FancyShader();
-	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<>();
-	private Map<TexturedModel, List<Entity>> fancyEntities = new HashMap<>();
 	private List<Terrain> terrains = new ArrayList<>();
 	
 	
@@ -55,11 +53,9 @@ public class MasterRenderer {
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
-		fancyRenderer = new FancyRenderer(fancyShader, projectionMatrix);
 	}
 	
-	public void render(Light sun, Camera camera) {
-		
+	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear) {
 		prepare();
 		
 		//entities
@@ -67,6 +63,7 @@ public class MasterRenderer {
 		shader.loadSkyColor(skyColor);
 		shader.loadLight(sun);
 		shader.loadViewMatrix(camera);
+		shader.loadClipPlane(clipPlane);
 		renderer.render(entities);
 		shader.stop();
 		//terrain
@@ -76,18 +73,11 @@ public class MasterRenderer {
 		terrainShader.loadViewMatrix(camera);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
-		//fancy stuff
-		fancyShader.start();
-		fancyShader.loadSkyColor(skyColor);
-		fancyShader.loadLight(sun);
-		fancyShader.loadViewMatrix(camera);
-		fancyRenderer.render(fancyEntities);
-		fancyShader.stop();
-
 		
-		terrains.clear();
-		entities.clear();
-		fancyEntities.clear();
+		if(clear) {
+			terrains.clear();
+			entities.clear();
+		}
 	}
 	
 	public void processTerrain(Terrain terrain) {
@@ -107,23 +97,9 @@ public class MasterRenderer {
 		}
 	}
 	
-	public void processFancyEntity(Entity entity) {
-		TexturedModel texModel = entity.getModel();
-		List<Entity> batch = fancyEntities.get(texModel);
-		if(batch!=null) {//batch already exitst
-			batch.add(entity);
-		}
-		else {
-			List<Entity> newBatch = new ArrayList<>();
-			newBatch.add(entity);
-			fancyEntities.put(texModel, newBatch);
-		}
-	}
-	
 	public void cleanUp() {
 		shader.cleanUp();
 		terrainShader.cleanUp();
-		fancyShader.cleanUp();
 	}  
 	
 	public void prepare() {
@@ -145,6 +121,10 @@ public class MasterRenderer {
         projectionMatrix.m23 = -1;
         projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
         projectionMatrix.m33 = 0;
+    }
+    
+    public Matrix4f getProjectionMatrix() {
+    	return this.projectionMatrix;
     }
     
 }

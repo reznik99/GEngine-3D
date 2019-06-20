@@ -2,6 +2,7 @@ package shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
+import org.lwjgl.util.vector.Vector4f;
 
 import entities.Camera;
 import entities.Light;
@@ -23,6 +24,8 @@ public class StaticShader extends ShaderProgram{
 	private int location_reflectivity;
 	
 	private int location_skyColor;
+	
+	private int location_plane;
 	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -48,6 +51,12 @@ public class StaticShader extends ShaderProgram{
 		location_shineDamper = super.getUniformLocation("shineDamper");
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_skyColor = super.getUniformLocation("skyColor");
+		location_plane = super.getUniformLocation("plane");
+	
+	}
+	
+	public void loadClipPlane(Vector4f plane) {
+		super.loadVector(location_plane, plane);
 	}
 	
 	public void loadTransformationMatrix(Matrix4f matrix) {

@@ -76,6 +76,13 @@ public class Camera {
 	}
 	
 	
+	public void setPosition(Vector3f pos) {
+		this.position = pos;
+	}
+	public void setPitch(float theta) {
+		this.pitch = theta;
+	}
+	
 	public float getDistanceFromPlayer() {
 		return distanceFromPlayer;
 	}

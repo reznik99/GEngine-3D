@@ -15,12 +15,15 @@ uniform mat4 projectionMatrix;		// where the default location of everything is
 uniform mat4 viewMatrix;			// camera's perspective
 uniform vec3 lightPosition;
 
+uniform vec4 plane;
+
 const float density = 0.004;
 const float gradient = 2;
 
 void main(void){
 
 	vec4 worldPosition = transformationMatrix * vec4(position,1.0); // position is the position of the current vertex
+	gl_ClipDistance[0] = dot(worldPosition, plane);
 	
 	vec4 positionRelativeToCam = viewMatrix * worldPosition;
 	
