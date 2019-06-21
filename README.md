@@ -1,6 +1,11 @@
 # GEngine-3D
     Simple OpenGL 3D engine using JLWGL
 
+readmePictures
+
+<img src="readmePictures/water.png" alt="drawing" width="400"/> 
+<img src="readmePictures/lighting.png" alt="drawing" width="400"/>
+
 ## Implemented features:
 
   * Terrain Collision
