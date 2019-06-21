@@ -55,11 +55,12 @@ public class MasterRenderer {
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
 	}
 	
-	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear) {
+	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear, boolean underwater) {
 		prepare();
 		
 		//entities
 		shader.start();
+		shader.loadUnderWater(underwater);
 		shader.loadSkyColor(skyColor);
 		shader.loadLight(sun);
 		shader.loadViewMatrix(camera);
@@ -68,6 +69,7 @@ public class MasterRenderer {
 		shader.stop();
 		//terrain
 		terrainShader.start();
+		terrainShader.loadUnderWater(underwater);
 		terrainShader.loadSkyColor(skyColor);
 		terrainShader.loadLight(sun);
 		terrainShader.loadViewMatrix(camera);

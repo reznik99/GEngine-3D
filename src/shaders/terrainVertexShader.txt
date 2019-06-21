@@ -14,8 +14,9 @@ uniform mat4 transformationMatrix;
 uniform mat4 projectionMatrix;
 uniform mat4 viewMatrix;
 uniform vec3 lightPosition;
-
 uniform vec4 plane;
+
+uniform float underWater;
 
 const float density = 0.004;
 const float gradient = 2;

@@ -8,7 +8,7 @@ public class DisplayManager {
 
     private static final int WIDTH = 1920;
     private static final int HEIGHT = 1080;
-    private static final int FPS_CAP = 120;
+    private static final int FPS_CAP = 60;
     
     private static long lastFrameTime;
     private static float delta;
@@ -20,7 +20,7 @@ public class DisplayManager {
 
         try {
             Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-            Display.create(new PixelFormat().withDepthBits(24), attribs);
+            Display.create(new PixelFormat(), attribs);//.withDepthBits(24)
             Display.setTitle("Gorini 3D Engine");
         } catch (LWJGLException e) {
             e.printStackTrace();

@@ -31,6 +31,7 @@ public class TerrainShader extends ShaderProgram{
 	private int location_blendMap;
 	
 	private int location_plane;
+	private int location_underWater;
 
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -65,6 +66,12 @@ public class TerrainShader extends ShaderProgram{
 		
 		location_plane = super.getUniformLocation("plane");
 		
+		location_underWater = super.getUniformLocation("underWater");
+		
+	}
+	
+	public void loadUnderWater(boolean underwater) {
+		super.loadFloat(location_underWater, underwater ? 1 : 0);
 	}
 
 	public void connectTextureUnits() {

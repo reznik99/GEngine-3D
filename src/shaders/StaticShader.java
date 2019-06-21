@@ -26,6 +26,8 @@ public class StaticShader extends ShaderProgram{
 	private int location_skyColor;
 	private int location_plane;
 	
+	private int location_underWater;
+	
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
 	}
@@ -51,9 +53,13 @@ public class StaticShader extends ShaderProgram{
 		location_reflectivity = super.getUniformLocation("reflectivity");
 		location_skyColor = super.getUniformLocation("skyColor");
 		location_plane = super.getUniformLocation("plane");
+		location_underWater = super.getUniformLocation("underWater");
 	
 	}
 	
+	public void loadUnderWater(boolean underwater) {
+		super.loadFloat(location_underWater, underwater ? 1 : 0);
+	}
 	public void loadClipPlane(Vector4f plane) {
 		super.loadVector(location_plane, plane);
 	}

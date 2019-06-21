@@ -57,7 +57,7 @@ public class Driver {
 
 		/* LOAD Models and Textures */
 		TexturedModel treeModel = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
-		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("Palm", loader), new ModelTexture(loader.loadTexture("Palm")));
+		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("Palm2LowPoly", loader), new ModelTexture(loader.loadTexture("Palm2")));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("flower")));
 		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("rock", loader), new ModelTexture(loader.loadTexture("metal")));
@@ -96,6 +96,7 @@ public class Driver {
 				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
 				scale = rand.nextFloat()*1f + 1f;
 			}
+			if(model == palmModel) scale = rand.nextFloat()*2f + 1f;
 			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360, 0, scale);
 			
 			entities.add(entity);
@@ -150,7 +151,7 @@ public class Driver {
 					playerEntity.getPosition().y, 
 					playerEntity.getPosition().z);
 			camera.move();
-			((Player)playerEntity).move(terrain);
+			boolean underwater = ((Player)playerEntity).move(terrain, water);
 			light.update();
 			
 			//Load Entities and terrain for rendering
@@ -165,7 +166,7 @@ public class Driver {
 			camera.getPosition().y -= distance;
 			camera.setPitch(-camera.getPitch());
 			
-			renderer.render(light, camera, reflectionClipPlane, false);
+			renderer.render(light, camera, reflectionClipPlane, false, false);
 			
 			camera.getPosition().y += distance;
 			camera.setPitch(-camera.getPitch());
@@ -176,14 +177,14 @@ public class Driver {
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE1);
 			fbos.bindRefractionFrameBuffer();
 			
-			renderer.render(light, camera, refractionClipPlane, false);
+			renderer.render(light, camera, refractionClipPlane, false, false);
 			
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE1);
 			fbos.unbindCurrentFrameBuffer();
 			/* END REFRACTION */
 
 			//render and clear buffers
-			renderer.render(light, camera, reflectionClipPlane, true);	 
+			renderer.render(light, camera, reflectionClipPlane, true, underwater);	 
 			//render water
 			waterRenderer.render(water, camera);
 			//update

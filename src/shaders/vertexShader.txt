@@ -14,8 +14,8 @@ uniform mat4 transformationMatrix;	// the entity's position relative to the ever
 uniform mat4 projectionMatrix;		// where the default location of everything is
 uniform mat4 viewMatrix;			// camera's perspective
 uniform vec3 lightPosition;
-
 uniform vec4 plane;
+uniform float underWater;
 
 const float density = 0.004;
 const float gradient = 2;

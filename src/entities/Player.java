@@ -6,12 +6,14 @@ import org.lwjgl.util.vector.Vector3f;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import terrains.Terrain;
+import water.WaterTile;
 
 public class Player extends Entity{
 
 	private static final float GRAVITY = 100;
 	private static final float JUMP_POWER = 30;
 	private static final float RUN_SPEED = 40;
+	private static float CURRENT_RUN_SPEED = RUN_SPEED;
 	private static final float TURN_SPEED = 160;
 	static final float PLAYER_HEIGHT = 7;
 	
@@ -27,13 +29,20 @@ public class Player extends Entity{
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
 	
-	public void move(Terrain terrain) {
+	public boolean move(Terrain terrain, WaterTile water) {
+		//slow down in water
+		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight())
+			CURRENT_RUN_SPEED = RUN_SPEED/2;
+		else
+			CURRENT_RUN_SPEED = RUN_SPEED;
+				
+		
 		//sets speeds and angles
 		this.terrainHeight = terrain.getHeightAt(this.getPosition().x, this.getPosition().z);
 		checkInputs();
 		//if both mouse pressed, player should move forward
 		if(strafe)
-			currentSpeed = RUN_SPEED;
+			currentSpeed = CURRENT_RUN_SPEED;
 		//movement
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(),  0);
 		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
@@ -50,6 +59,7 @@ public class Player extends Entity{
 			this.upwardsSpeed = 0;
 		}
 		strafe = false;
+		return CURRENT_RUN_SPEED == RUN_SPEED/2; //true if underwater
 	}
 	
 	private void jump() {
@@ -59,9 +69,9 @@ public class Player extends Entity{
 	
 	private void checkInputs() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_W))
-			this.currentSpeed = RUN_SPEED;
+			this.currentSpeed = CURRENT_RUN_SPEED;
 		else if(Keyboard.isKeyDown(Keyboard.KEY_S))
-			this.currentSpeed = -RUN_SPEED;
+			this.currentSpeed = -CURRENT_RUN_SPEED;
 		else
 			this.currentSpeed = 0;
 		
