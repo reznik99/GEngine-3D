@@ -52,7 +52,7 @@ public class Camera {
 		float zoomLevel = Mouse.getDWheel()/10;
 		if(zoomLevel!=0)
 			this.targetDistanceFromPlayer = this.distanceFromPlayer - zoomLevel;
-		this.distanceFromPlayer = lerp(distanceFromPlayer, targetDistanceFromPlayer, 0.05f); //distanceFromPlayer + 0.01f * (targetDistanceFromPlayer - distanceFromPlayer);
+		this.distanceFromPlayer = lerp(distanceFromPlayer, targetDistanceFromPlayer, 0.05f);
 	}
 	
 	private void calculatePitch(){

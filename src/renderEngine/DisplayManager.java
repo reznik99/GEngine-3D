@@ -15,11 +15,12 @@ public class DisplayManager {
 
     public static void createDisplay(){
 
+    	//version 3.2
         ContextAttribs attribs = new ContextAttribs(3,2).withForwardCompatible(true).withProfileCore(true);
 
         try {
             Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-            Display.create(new PixelFormat(), attribs);
+            Display.create(new PixelFormat().withDepthBits(24), attribs);
             Display.setTitle("Gorini 3D Engine");
         } catch (LWJGLException e) {
             e.printStackTrace();

@@ -34,7 +34,6 @@ public class Player extends Entity{
 		//if both mouse pressed, player should move forward
 		if(strafe)
 			currentSpeed = RUN_SPEED;
-		//System.out.println(this.getPosition().x + " " + this.getPosition().z);
 		//movement
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(),  0);
 		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();

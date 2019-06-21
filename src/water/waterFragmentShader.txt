@@ -9,8 +9,6 @@ uniform sampler2D refractionTexture;
 
 void main(void){
 
-	
-
 	vec2 ndc = (clipSpace.xy/clipSpace.w)/2.0 + 0.5;
 	
 	vec2 reflectTexCoords = vec2(ndc.x, -ndc.y);
@@ -19,7 +17,7 @@ void main(void){
 	vec4 reflectionColour = texture(reflectionTexture, reflectTexCoords);
 	vec4 refractionColour = texture(refractionTexture, refractTexCoords);
 
-	out_Color = mix(reflectionColour, refractionColour, 0.8);
+	out_Color = mix(reflectionColour, refractionColour, 0.75);
 	
 }
 

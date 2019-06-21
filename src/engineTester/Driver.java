@@ -56,7 +56,8 @@ public class Driver {
 		List<Entity> entities = new ArrayList<Entity>();
 
 		/* LOAD Models and Textures */
-		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
+		TexturedModel treeModel = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
+		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("Palm", loader), new ModelTexture(loader.loadTexture("Palm")));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("flower")));
 		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("rock", loader), new ModelTexture(loader.loadTexture("metal")));
@@ -90,7 +91,7 @@ public class Driver {
 				y = terrain.getHeightAt(x, z);
 			}
 			Vector3f position = new Vector3f(x , y, z);
-			TexturedModel model = tree;
+			TexturedModel model = y>water.getHeight()+25 ? treeModel : palmModel;
 			if(i<150) {
 				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
 				scale = rand.nextFloat()*1f + 1f;
@@ -152,7 +153,7 @@ public class Driver {
 			((Player)playerEntity).move(terrain);
 			light.update();
 			
-			//Load Entities for rendering
+			//Load Entities and terrain for rendering
 			for(Entity e : entities)
 				renderer.processEntity(e);
 			renderer.processTerrain(terrain);
