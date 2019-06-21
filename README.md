@@ -9,7 +9,7 @@ readmePictures
 ## Implemented features:
 
   * Terrain Collision
-  * Water Reflection AND Refraction
+  * Water Reflection AND Refraction AND Normal mapped waves
   * Simple underwater effects(slow, blue hue)
   * HeightMap Terrain Generation
   * Multi-texturing
@@ -22,7 +22,7 @@ readmePictures
 
 
 ## To be implemented:
-  * Water waves
+  * Water waves (vertex)
   * Water collision
   * Shadow shader
   * Skybox

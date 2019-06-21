@@ -51,7 +51,7 @@ public class Driver {
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap2");
-		WaterTile water = new WaterTile(400, 400, -30f);//bigger than terrain to give island look
+		WaterTile water = new WaterTile(400, 400, -10f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
@@ -129,14 +129,30 @@ public class Driver {
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer();
 		
-		//audio
+		//audio 
 		AudioManager.init();
-		int buffer = AudioManager.loadSound("audio/bonfire.wav");
+		int bufferFire = AudioManager.loadSound("audio/bonfire.wav");
+		int bufferAmbient = AudioManager.loadSound("audio/islandAmbient.wav");
 		Source bonFireSource = new Source();
 		bonFireSource.setVolume(3);
 		bonFireSource.setLooping(true);
 		bonFireSource.setPosition(bonfireEntity.getPosition());
-		bonFireSource.play(buffer);
+		bonFireSource.play(bufferFire);
+		Source ambientSource1 = new Source();
+		ambientSource1.setVolume(3);
+		ambientSource1.setLooping(true);
+		ambientSource1.setPosition(new Vector3f(300, 25, 100));
+		ambientSource1.play(bufferAmbient);
+		Source ambientSource2 = new Source();
+		ambientSource2.setVolume(3);
+		ambientSource2.setLooping(true);
+		ambientSource2.setPosition(new Vector3f(600, 25, 600));
+		ambientSource2.play(bufferAmbient);
+		Source ambientSource3 = new Source();
+		ambientSource3.setVolume(3);
+		ambientSource3.setLooping(true);
+		ambientSource3.setPosition(new Vector3f(150, 25, 500));
+		ambientSource3.play(bufferAmbient);
 		
 		//water stuff
 		WaterFrameBuffers fbos = new WaterFrameBuffers();
@@ -152,7 +168,7 @@ public class Driver {
 					playerEntity.getPosition().z);
 			camera.move();
 			boolean underwater = ((Player)playerEntity).move(terrain, water);
-			light.update();
+			//light.update();
 			
 			//Load Entities and terrain for rendering
 			for(Entity e : entities)
