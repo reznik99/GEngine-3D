@@ -1,29 +1,26 @@
 # GEngine-3D
-OpenGL 3D engine using JLWGL 
+    Simple OpenGL 3D engine using JLWGL
 
 ## Implemented features:
-<ul> 
-  <li>Terrain Collision</li>
-  <li>Water Reflection AND Refraction</li>
-  <li>HeightMap Terrain Generation</li>
-  <li>Multi-texturing</li>
-  <li>Mip mapping</li>
-  <li>Backface culling</li>
-  <li>Simple OBJ loader</li>
-  <li>Z-buffer</li>
-  <li>Player (FP and 3rdP)</li>
-  <li>Random object spawn</li>
-</ul>
+
+  * Terrain Collision
+  * Water Reflection AND Refraction
+  * Simple underwater effects(slow, blue hue)
+  * HeightMap Terrain Generation
+  * Multi-texturing
+  * Mip mapping
+  * Backface culling
+  * Simple OBJ loader
+  * Z-buffer
+  * Player (FP and 3rdP)
+  * Random object spawn
+
 
 ## To be implemented:
-<ul>
-  <li>Water waves/li>
-  <li>Water collision/li>
-  <li>Shadow shader</li>
-  <li>Skybox</li>
-  <li>OBJ Collision</li>
-  <li>Particle Shader</li>
-  <li>Networking?</li>
-</ul>
-
-
+  * Water waves
+  * Water collision
+  * Shadow shader
+  * Skybox
+  * OBJ Collision
+  * Particle Shader
+  * Networking?
