@@ -50,7 +50,7 @@ public class Driver {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap");
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap2");
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
@@ -96,7 +96,7 @@ public class Driver {
 		TexturedModel fallenTreeModel = new TexturedModel(OBJLoader.loadObjModel("fallenRedridgeTree", loader), new ModelTexture(loader.loadTexture("fallenRedridgeTree")));
 		//generate Random Entities
 		Random rand = new Random();
-		for(int i=0; i<800; i++) {
+		for(int i=0; i<400; i++) {
 			float x = rand.nextFloat()*800;
 			float z = rand.nextFloat()*800;
 			float y = terrain.getHeightAt(x, z);
@@ -158,8 +158,6 @@ public class Driver {
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
 		WaterTile water = new WaterTile(400, 400, -2.5f);
 		
-		Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
-		
 		while(!Display.isCloseRequested()){
 			//update entities
 			AudioManager.setListenerData(
@@ -176,6 +174,7 @@ public class Driver {
 			renderer.processTerrain(terrain);
 			
 			/* REFLECTION */
+			Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			fbos.bindReflectionFrameBuffer();
 			
@@ -190,6 +189,7 @@ public class Driver {
 			
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			fbos.unbindCurrentFrameBuffer();
+			reflectionClipPlane = new Vector4f(0, 1, 0, 10000000);
 			/* END REFLECTION */
 
 			//render and clear buffers

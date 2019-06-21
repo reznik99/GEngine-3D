@@ -71,6 +71,7 @@ public class MasterRenderer {
 		terrainShader.loadSkyColor(skyColor);
 		terrainShader.loadLight(sun);
 		terrainShader.loadViewMatrix(camera);
+		terrainShader.loadClipPlane(clipPlane);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
 		
