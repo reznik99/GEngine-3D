@@ -50,47 +50,33 @@ public class Driver {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap4");
-		WaterTile water = new WaterTile(400, 400, -80f);//bigger than terrain to give island look
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap2");
+		WaterTile water = new WaterTile(400, 400, -30f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
 		/* LOAD Models and Textures */
-		TexturedModel dragon = new TexturedModel(OBJLoader.loadObjModel("dragon", loader), new ModelTexture(loader.loadTexture("metal")));
-		dragon.getTexture().setReflectivity(10);
-		dragon.getTexture().setShineDamper(10);
-
 		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
-
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
-
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("flower")));
-		
 		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("rock", loader), new ModelTexture(loader.loadTexture("metal")));
-		
 		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("tower1", loader), new ModelTexture(loader.loadTexture("tower1")));
-		
 		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("building1", loader), new ModelTexture(loader.loadTexture("metal")));
-		
 		TexturedModel waterModel = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("water")));
 		waterModel.getTexture().setReflectivity(1);
 		waterModel.getTexture().setShineDamper(5);
-		
 		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("alliance_statue", loader), new ModelTexture(loader.loadTexture("alliance_statue")));
 		statueModel.getTexture().setReflectivity(1);
 		statueModel.getTexture().setShineDamper(5);
-		
-		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("Chogall", loader), new ModelTexture(loader.loadTexture("Chogall")));
-		playerModel.getTexture().setReflectivity(0.2f);
-		playerModel.getTexture().setShineDamper(5);
-		
-		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("bonfire", loader), new ModelTexture(loader.loadTexture("bonfire")));
-		
 		TexturedModel statue2Model = new TexturedModel(OBJLoader.loadObjModel("lotharStatue", loader), new ModelTexture(loader.loadTexture("lotharStatue1")));
 		statue2Model.getTexture().setReflectivity(0.2f);
 		statue2Model.getTexture().setShineDamper(5);
-		
+		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("Chogall", loader), new ModelTexture(loader.loadTexture("Chogall")));
+		playerModel.getTexture().setReflectivity(0.2f);
+		playerModel.getTexture().setShineDamper(5);
+		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("bonfire", loader), new ModelTexture(loader.loadTexture("bonfire")));
 		TexturedModel fallenTreeModel = new TexturedModel(OBJLoader.loadObjModel("fallenRedridgeTree", loader), new ModelTexture(loader.loadTexture("fallenRedridgeTree")));
+		
 		//generate Random Entities
 		Random rand = new Random();
 		for(int i=0; i<400; i++) {
@@ -109,8 +95,8 @@ public class Driver {
 				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
 				scale = rand.nextFloat()*1f + 1f;
 			}
-			
 			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360, 0, scale);
+			
 			entities.add(entity);
 		}
 		
@@ -133,7 +119,8 @@ public class Driver {
 		
 		//player
 		Entity playerEntity = new Player(playerModel, new Vector3f(220,terrain.getHeightAt(223, 198)+10,198),0,0,0,3f);
-		//entities.add(playerEntity);
+		if(!Camera.FIRST_PERSON)//dont render player if firstPerson
+			entities.add(playerEntity);
 		
 		//camera and light
 		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+13,198), new Vector3f(1,0.85f,0.55f));
@@ -154,6 +141,7 @@ public class Driver {
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
 		Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
+		Vector4f refractionClipPlane = new Vector4f(0, -1, 0, water.getHeight());
 		while(!Display.isCloseRequested()){
 			//update entities
 			AudioManager.setListenerData(
@@ -183,6 +171,15 @@ public class Driver {
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			fbos.unbindCurrentFrameBuffer();
 			/* END REFLECTION */
+			/* REFRACTION */
+			GL11.glEnable(GL30.GL_CLIP_DISTANCE1);
+			fbos.bindRefractionFrameBuffer();
+			
+			renderer.render(light, camera, refractionClipPlane, false);
+			
+			GL11.glDisable(GL30.GL_CLIP_DISTANCE1);
+			fbos.unbindCurrentFrameBuffer();
+			/* END REFRACTION */
 
 			//render and clear buffers
 			renderer.render(light, camera, reflectionClipPlane, true);	 

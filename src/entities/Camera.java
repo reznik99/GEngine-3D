@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 
-	private static final boolean FIRST_PERSON = true;
+	public static final boolean FIRST_PERSON = true;
 	private Vector3f position;
 	private float pitch = 20;
 	private float yaw = 180;
@@ -57,7 +57,7 @@ public class Camera {
 	
 	private void calculatePitch(){
 		if(Mouse.isButtonDown(0)) {
-			float pitchChange = Mouse.getDY() * 0.1f;
+			float pitchChange = Mouse.getDY() * 0.15f;
 			if(this.pitch-pitchChange > -70 && this.pitch-pitchChange < 70)
 				this.pitch -= pitchChange;
 		}
@@ -68,11 +68,11 @@ public class Camera {
 	}
 	
 	private void calculateAngleAroundPlayer() {
-		if(Mouse.isButtonDown(0)) {
-			float angleChange = Mouse.getDX() * 0.3f;
+		if(Mouse.isButtonDown(0)) { //turn camera without affecting player
+			float angleChange = Mouse.getDX() * 0.2f;
 			this.angleAroundPlayer -= angleChange;
 		}
-		if(Mouse.isButtonDown(1)) {
+		if(Mouse.isButtonDown(1)) { //face player to camera direction
 			player.setRotY(player.getRotY() + this.angleAroundPlayer);
 			this.angleAroundPlayer = 0;
 			player.setStrafe(true);

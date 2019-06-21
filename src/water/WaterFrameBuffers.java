@@ -26,7 +26,7 @@ public class WaterFrameBuffers {
  
     public WaterFrameBuffers() {//call when loading the game
         initialiseReflectionFrameBuffer();//colorBuffer AND DepthBuffer
-        //initialiseRefractionFrameBuffer();//colorBuffer
+        initialiseRefractionFrameBuffer();//colorBuffer
     }
  
     public void cleanUp() {//call when closing the game
