@@ -50,7 +50,8 @@ public class Driver {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap2");
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap4");
+		WaterTile water = new WaterTile(400, 400, -80f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
@@ -59,11 +60,7 @@ public class Driver {
 		dragon.getTexture().setReflectivity(10);
 		dragon.getTexture().setShineDamper(10);
 
-		TexturedModel stall = new TexturedModel(OBJLoader.loadObjModel("stall", loader), new ModelTexture(loader.loadTexture("stallTexture")));
-		stall.getTexture().setReflectivity(2);
-		stall.getTexture().setShineDamper(50);
-
-		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("redridgeTree", loader), new ModelTexture(loader.loadTexture("redridgeTree1")));
+		TexturedModel tree = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
 
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
 
@@ -97,29 +94,30 @@ public class Driver {
 		//generate Random Entities
 		Random rand = new Random();
 		for(int i=0; i<400; i++) {
-			float x = rand.nextFloat()*800;
-			float z = rand.nextFloat()*800;
+			float x = rand.nextFloat()*Terrain.SIZE;
+			float z = rand.nextFloat()*Terrain.SIZE;
 			float y = terrain.getHeightAt(x, z);
-			while(y<-2f) {
-				x = rand.nextFloat()*800;
-				z = rand.nextFloat()*800;
+			float scale = rand.nextFloat()*1f + 3f;
+			while(y<water.getHeight()) {
+				x = rand.nextFloat()*Terrain.SIZE;
+				z = rand.nextFloat()*Terrain.SIZE;
 				y = terrain.getHeightAt(x, z);
 			}
 			Vector3f position = new Vector3f(x , y, z);
 			TexturedModel model = tree;
-			if(i<150)
+			if(i<150) {
 				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
+				scale = rand.nextFloat()*1f + 1f;
+			}
 			
-			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360,0,1);
-			entity.setScale(rand.nextFloat()*1f + 1f);
+			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360, 0, scale);
 			entities.add(entity);
 		}
 		
 		//hardCoded Entities
 		Entity buildingEntity = new Entity(building, new Vector3f(125, terrain.getHeightAt(125, 205), 205), 0,180,0,0.25f);
-		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,7f);
+		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,8f);
 		Entity towerEntity2 = new Entity(tower, new Vector3f(650, terrain.getHeightAt(650, 300), 300), 0,0,0,8f);
-		Entity stallEntity = new Entity(stall, new Vector3f(20,0,20), 0,0,0,1);
 		Entity statueEntity = new Entity(statueModel, new Vector3f(465,terrain.getHeightAt(465, 270),270),0,90,0,0.2f);
 		Entity bonfireEntity = new Entity(bonfireModel, new Vector3f(223,terrain.getHeightAt(223, 198),198),0,90,0,2.5f);
 		Entity statueEntity3 = new Entity(statue2Model, new Vector3f(291,terrain.getHeightAt(291, 463)-5,463),0,90,0,2f);
@@ -132,11 +130,10 @@ public class Driver {
 		entities.add(statueEntity);
 		entities.add(buildingEntity);
 		entities.add(towerEntity);
-		entities.add(stallEntity);
 		
 		//player
 		Entity playerEntity = new Player(playerModel, new Vector3f(220,terrain.getHeightAt(223, 198)+10,198),0,0,0,3f);
-		entities.add(playerEntity);
+		//entities.add(playerEntity);
 		
 		//camera and light
 		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+13,198), new Vector3f(1,0.85f,0.55f));
@@ -156,8 +153,7 @@ public class Driver {
 		WaterFrameBuffers fbos = new WaterFrameBuffers();
 		WaterShader waterShader = new WaterShader();
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
-		WaterTile water = new WaterTile(400, 400, -2.5f);
-		
+		Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
 		while(!Display.isCloseRequested()){
 			//update entities
 			AudioManager.setListenerData(
@@ -166,7 +162,7 @@ public class Driver {
 					playerEntity.getPosition().z);
 			camera.move();
 			((Player)playerEntity).move(terrain);
-			//light.update();
+			light.update();
 			
 			//Load Entities for rendering
 			for(Entity e : entities)
@@ -174,10 +170,8 @@ public class Driver {
 			renderer.processTerrain(terrain);
 			
 			/* REFLECTION */
-			Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			fbos.bindReflectionFrameBuffer();
-			
 			float distance = 2 * (camera.getPosition().y - water.getHeight());
 			camera.getPosition().y -= distance;
 			camera.setPitch(-camera.getPitch());
@@ -186,10 +180,8 @@ public class Driver {
 			
 			camera.getPosition().y += distance;
 			camera.setPitch(-camera.getPitch());
-			
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			fbos.unbindCurrentFrameBuffer();
-			reflectionClipPlane = new Vector4f(0, 1, 0, 10000000);
 			/* END REFLECTION */
 
 			//render and clear buffers

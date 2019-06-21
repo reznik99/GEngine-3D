@@ -38,16 +38,13 @@ public class WaterShader extends ShaderProgram{
 	public void connectTextureUnits() {
 		super.loadInt(location_reflectionTexture, 0);
 	}
-	
     public void loadProjectionMatrix(Matrix4f projection) {
         loadMatrix(location_projectionMatrix, projection);
     }
-     
     public void loadViewMatrix(Camera camera){
         Matrix4f viewMatrix = Maths.createViewMatrix(camera);
         loadMatrix(location_viewMatrix, viewMatrix);
     }
- 
     public void loadModelMatrix(Matrix4f modelMatrix){
         loadMatrix(location_modelMatrix, modelMatrix);
     }

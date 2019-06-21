@@ -10,9 +10,9 @@ uniform mat4 modelMatrix;
 
 
 void main(void) {
-	
+
+	//clipping
 	clipSpace = projectionMatrix * viewMatrix * modelMatrix * vec4(position.x, 0.0, position.y, 1.0);
 	gl_Position = clipSpace;
-	
  
 }

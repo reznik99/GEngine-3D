@@ -7,20 +7,22 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 
-	private Vector3f position = new Vector3f(0,0,0);
+	private static final boolean FIRST_PERSON = true;
+	private Vector3f position;
 	private float pitch = 20;
 	private float yaw = 180;
 	private float roll;
 	private float moveSpeed = 4f;
 	private float lookSpeed = 0.6f;
 	//player stuff
-	private float distanceFromPlayer = 50;
+	private float distanceFromPlayer = 0;
 	private float targetDistanceFromPlayer = distanceFromPlayer;
 	private float angleAroundPlayer = 0;
 	private Player player;
 	
 	public Camera(Player player) {
 		this.player = player;
+		this.position = new Vector3f(0,Player.PLAYER_HEIGHT,0);
 	}
 
 	public void move() {
@@ -46,6 +48,7 @@ public class Camera {
 	}
 
 	private void calculateZoom() {
+		if(FIRST_PERSON) return;
 		float zoomLevel = Mouse.getDWheel()/10;
 		if(zoomLevel!=0)
 			this.targetDistanceFromPlayer = this.distanceFromPlayer - zoomLevel;
@@ -55,7 +58,8 @@ public class Camera {
 	private void calculatePitch(){
 		if(Mouse.isButtonDown(0)) {
 			float pitchChange = Mouse.getDY() * 0.1f;
-			this.pitch -= pitchChange;
+			if(this.pitch-pitchChange > -70 && this.pitch-pitchChange < 70)
+				this.pitch -= pitchChange;
 		}
 	}
 	

@@ -24,7 +24,6 @@ public class StaticShader extends ShaderProgram{
 	private int location_reflectivity;
 	
 	private int location_skyColor;
-	
 	private int location_plane;
 	
 	public StaticShader() {
