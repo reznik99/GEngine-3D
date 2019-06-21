@@ -24,7 +24,7 @@ import tools.Maths;
 public class WaterRenderer {
 
 	private static final String DUDV_MAP = "waterDUDV";
-	private static final float WAVE_SPEED = 0.01f;
+	private static final float WAVE_SPEED = 0.015f;
 	private RawModel quad;
 	private WaterShader shader;
 	private WaterFrameBuffers fbos;
@@ -71,6 +71,9 @@ public class WaterRenderer {
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fbos.getRefractionTexture());
 		GL13.glActiveTexture(GL13.GL_TEXTURE2);
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, dudvTexture);
+		
+		GL13.glActiveTexture(GL13.GL_TEXTURE4);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, fbos.getRefractionDepthTexture());
 	}
 
 	private void unbind() {

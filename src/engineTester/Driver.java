@@ -51,7 +51,7 @@ public class Driver {
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
 		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap2");
-		WaterTile water = new WaterTile(400, 400, -10f);//bigger than terrain to give island look
+		WaterTile water = new WaterTile(400, 400, 0f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
