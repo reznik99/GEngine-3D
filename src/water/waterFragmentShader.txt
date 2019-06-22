@@ -48,7 +48,7 @@ void main(void){
 	
 	refractionColour = mix(refractionColour, waterColour, clamp(waterDepth/depthVisibility, 0.0, 1.0));
 
-	out_Color = mix(reflectionColour, refractionColour, 0.65f);
+	out_Color = mix(reflectionColour, refractionColour, 1 - clamp(waterDepth/depthVisibility, 0.0, 0.75f));
 	
 }
 
