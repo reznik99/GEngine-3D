@@ -1,10 +1,9 @@
 # GEngine-3D
     Simple OpenGL 3D engine using JLWGL
 
-readmePictures
 
-<img src="readmePictures/water.png" alt="drawing" width="500"/> 
-<img src="readmePictures/lighting.png" alt="drawing" width="500"/>
+<img src="readmePictures/water.png" alt="drawing" width="50%"/>
+<img src="readmePictures/lighting.png" alt="drawing" width="50%"/>
 
 ## Implemented features:
 
