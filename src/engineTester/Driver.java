@@ -80,7 +80,7 @@ public class Driver {
 		
 		//generate Random Entities
 		Random rand = new Random();
-		for(int i=0; i<400; i++) {
+		for(int i=0; i<1000; i++) {
 			float x = rand.nextFloat()*Terrain.SIZE;
 			float z = rand.nextFloat()*Terrain.SIZE;
 			float y = terrain.getHeightAt(x, z);
@@ -92,7 +92,8 @@ public class Driver {
 			}
 			Vector3f position = new Vector3f(x , y, z);
 			TexturedModel model = y>water.getHeight()+25 ? treeModel : palmModel;
-			if(i<150) {
+			if(i<750) {
+				if(y>water.getHeight()+20) continue;
 				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
 				scale = rand.nextFloat()*1f + 1f;
 			}

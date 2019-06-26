@@ -10,88 +10,93 @@ import water.WaterTile;
 
 public class Player extends Entity{
 
-	private static final float GRAVITY = 100;
+	private static final float GRAVITY = 50;
 	private static final float JUMP_POWER = 30;
 	private static final float RUN_SPEED = 40;
-	private static float CURRENT_RUN_SPEED = RUN_SPEED;
+	private static final float SWIM_SPEED = 20;
 	private static final float TURN_SPEED = 160;
 	static final float PLAYER_HEIGHT = 7;
-	
+
 	private float terrainHeight = 0;
-	
-	private float currentSpeed = 0;
 	private float currentTurnSpeed = 0;
-	private float upwardsSpeed = 0;
+	private static Vector3f speed = new Vector3f(0, 0, 0);
 	private boolean inAir = false;
-	private boolean strafe = false;
-	
+	private boolean inWater = false;
+
 	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
 	}
-	
+
 	public boolean move(Terrain terrain, WaterTile water) {
-		//slow down in water
-		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight())
-			CURRENT_RUN_SPEED = RUN_SPEED/2;
-		else
-			CURRENT_RUN_SPEED = RUN_SPEED;
-				
 		
+		inWater = false;
+		//if head under water
+		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight()) 
+			inWater = true;
+
 		//sets speeds and angles
 		this.terrainHeight = terrain.getHeightAt(this.getPosition().x, this.getPosition().z);
 		checkInputs();
-		//if both mouse pressed, player should move forward
-		if(strafe)
-			currentSpeed = CURRENT_RUN_SPEED;
-		//movement
+
+		//rotation
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(),  0);
-		float distance = currentSpeed * DisplayManager.getFrameTimeSeconds();
-		float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
-		float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
-		super.increasePosition(dx, 0, dz);
+		//movement
+		super.increasePosition(speed.x, 0, speed.z);
+
+		//fall
+		float local_gravity = inWater ? GRAVITY/2 : GRAVITY;
+		speed.y -= local_gravity * DisplayManager.getFrameTimeSeconds();
+		super.increasePosition(0, speed.y * DisplayManager.getFrameTimeSeconds(), 0);
+		if(inWater) speed.y*=0.95;
 		
-		//jumping
-		upwardsSpeed -= GRAVITY * DisplayManager.getFrameTimeSeconds();
-		super.increasePosition(0, upwardsSpeed * DisplayManager.getFrameTimeSeconds(), 0);
+		//collision detection (terrain)
 		if(this.getPosition().y<this.terrainHeight) {
 			super.getPosition().y = this.terrainHeight;
 			inAir = false;
-			this.upwardsSpeed = 0;
+			speed.y = 0;
 		}
-		strafe = false;
-		return CURRENT_RUN_SPEED == RUN_SPEED/2; //true if underwater
+
+		return inWater;
 	}
-	
+
 	private void jump() {
-		if(!inAir)
-			this.upwardsSpeed = Player.JUMP_POWER;
-	}
-	
-	private void checkInputs() {
-		if(Keyboard.isKeyDown(Keyboard.KEY_W))
-			this.currentSpeed = CURRENT_RUN_SPEED;
-		else if(Keyboard.isKeyDown(Keyboard.KEY_S))
-			this.currentSpeed = -CURRENT_RUN_SPEED;
-		else
-			this.currentSpeed = 0;
-		
-		if(!strafe) {
-			if(Keyboard.isKeyDown(Keyboard.KEY_D))
-				this.currentTurnSpeed = -TURN_SPEED;
-			else if(Keyboard.isKeyDown(Keyboard.KEY_A))
-				this.currentTurnSpeed = TURN_SPEED;
-			else
-				this.currentTurnSpeed = 0;
-		}else {
-			//strafe left or right
-			this.currentTurnSpeed = 0;
+		if(!inAir || inWater) {
+			this.speed.y = Player.JUMP_POWER;
+			inAir = true;
 		}
+	}
+
+	private void checkInputs() {
+		float max_speed = inWater ? SWIM_SPEED : RUN_SPEED;
+		float dx = (float) ((max_speed * DisplayManager.getFrameTimeSeconds())
+				* Math.sin(Math.toRadians(super.getRotY())));
+		float dz = (float) ((max_speed * DisplayManager.getFrameTimeSeconds())
+				* Math.cos(Math.toRadians(super.getRotY())));
+		
+		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
+			speed.x = dx;
+			speed.z = dz;
+		}
+			
+		else if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			speed.x = dx;
+			speed.z = dz;
+		}
+		else {
+			speed.x = 0;
+			speed.z = 0;
+		}
+
+
+		if(Keyboard.isKeyDown(Keyboard.KEY_D))
+			this.currentTurnSpeed = -TURN_SPEED;
+		else if(Keyboard.isKeyDown(Keyboard.KEY_A))
+			this.currentTurnSpeed = TURN_SPEED;
+		else
+			this.currentTurnSpeed = 0;
+
 		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 			this.jump();
-	}
-	
-	public void setStrafe(boolean val) {
-		this.strafe = val;
 	}
 
 }

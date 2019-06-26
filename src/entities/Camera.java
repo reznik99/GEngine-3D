@@ -75,7 +75,6 @@ public class Camera {
 		if(Mouse.isButtonDown(1)) { //face player to camera direction
 			player.setRotY(player.getRotY() + this.angleAroundPlayer);
 			this.angleAroundPlayer = 0;
-			player.setStrafe(true);
 		}
 	}
 	
