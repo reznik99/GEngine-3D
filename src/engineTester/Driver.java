@@ -128,7 +128,7 @@ public class Driver {
 		//camera and light
 		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+13,198), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer renderer = new MasterRenderer(loader);
 		
 		//audio 
 		AudioManager.init();
@@ -161,6 +161,7 @@ public class Driver {
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
 		Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
 		Vector4f refractionClipPlane = new Vector4f(0, -1, 0, water.getHeight());
+		//game loop
 		while(!Display.isCloseRequested()){
 			//update entities
 			AudioManager.setListenerData(

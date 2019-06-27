@@ -17,6 +17,7 @@ import entities.Light;
 import models.TexturedModel;
 import shaders.StaticShader;
 import shaders.TerrainShader;
+import skybox.SkyboxRenderer;
 import terrains.Terrain;
 import water.WaterRenderer;
 import water.WaterShader;
@@ -36,28 +37,32 @@ public class MasterRenderer {
 	
 	private Matrix4f projectionMatrix;
 	
+	/* shaders and renderers */
+	//entities
 	private StaticShader shader = new StaticShader();
 	private EntityRenderer renderer;
-	
+	//terrain
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader = new TerrainShader();
+	//skybox
+	private SkyboxRenderer skyboxRenderer;
 	
 	private Map<TexturedModel, List<Entity>> entities = new HashMap<>();
 	private List<Terrain> terrains = new ArrayList<>();
 	
 	
-	public MasterRenderer() {
+	public MasterRenderer(Loader loader) {
 		//dont render polygons facing away from camera
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		createProjectionMatrix();
 		renderer = new EntityRenderer(shader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
+		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 	}
 	
 	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear, boolean underwater) {
 		prepare();
-		
 		//entities
 		shader.start();
 		shader.loadUnderWater(underwater);
@@ -76,6 +81,8 @@ public class MasterRenderer {
 		terrainShader.loadClipPlane(clipPlane);
 		terrainRenderer.render(terrains);
 		terrainShader.stop();
+		//skybox
+		skyboxRenderer.render(camera);
 		
 		if(clear) {
 			terrains.clear();
