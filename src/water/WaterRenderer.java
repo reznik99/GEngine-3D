@@ -1,9 +1,6 @@
 package water;
 
-import java.util.List;
-import java.util.Map;
 
-import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -12,18 +9,14 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
 import entities.Camera;
-import entities.Entity;
 import models.RawModel;
-import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
-import shaders.StaticShader;
-import textures.ModelTexture;
 import tools.Maths;
 
 public class WaterRenderer {
 
-	private static final String DUDV_MAP = "waterDUDV";
+	private static final String DUDV_MAP = "/water/waterDUDV";
 	private static final float WAVE_SPEED = 0.015f;
 	private RawModel quad;
 	private WaterShader shader;

@@ -3,27 +3,22 @@ package engineTester;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
-
 import audio.AudioManager;
 import audio.Source;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
-import models.RawModel;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
 import renderEngine.MasterRenderer;
 import renderEngine.OBJLoader;
-import renderEngine.EntityRenderer;
-import shaders.StaticShader;
 import terrains.Terrain;
 import textures.ModelTexture;
 import textures.TerrainTexture;
@@ -42,41 +37,38 @@ public class Driver {
 		Loader loader = new Loader(); //loads up textures and models in VBOs to VAOs
 
 		// *********TERRAIN TEXTURE STUFF***********
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("grass"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("mud"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("grassFlowers"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("path"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("/terrain/grass"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("/terrain/mud"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("/terrain/grassFlowers"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("/terrain/rock"));
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("blendMap"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "heightmap2");
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap"));
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap");
 		WaterTile water = new WaterTile(400, 400, 0f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
 		/* LOAD Models and Textures */
-		TexturedModel treeModel = new TexturedModel(OBJLoader.loadObjModel("pine", loader), new ModelTexture(loader.loadTexture("pine")));
-		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("Palm2LowPoly", loader), new ModelTexture(loader.loadTexture("Palm2")));
-		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("grassTexture")));
-		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("grassModel", loader), new ModelTexture(loader.loadTexture("flower")));
-		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("rock", loader), new ModelTexture(loader.loadTexture("metal")));
-		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("tower1", loader), new ModelTexture(loader.loadTexture("tower1")));
-		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("building1", loader), new ModelTexture(loader.loadTexture("metal")));
-		TexturedModel waterModel = new TexturedModel(OBJLoader.loadObjModel("plane", loader), new ModelTexture(loader.loadTexture("water")));
-		waterModel.getTexture().setReflectivity(1);
-		waterModel.getTexture().setShineDamper(5);
-		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("alliance_statue", loader), new ModelTexture(loader.loadTexture("alliance_statue")));
+		TexturedModel treeModel = new TexturedModel(OBJLoader.loadObjModel("/objects/pine", loader), new ModelTexture(loader.loadTexture("/objects/pine")));
+		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("/objects/Palm2LowPoly", loader), new ModelTexture(loader.loadTexture("/objects/Palm2")));
+		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/grassTexture")));
+		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/flower")));
+		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("/objects/rock", loader), new ModelTexture(loader.loadTexture("/objects/metal")));
+		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("/objects/tower1", loader), new ModelTexture(loader.loadTexture("/objects/tower1")));
+		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("/objects/building1", loader), new ModelTexture(loader.loadTexture("/objects/metal")));
+		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("/objects/alliance_statue", loader), new ModelTexture(loader.loadTexture("/objects/alliance_statue")));
 		statueModel.getTexture().setReflectivity(1);
 		statueModel.getTexture().setShineDamper(5);
-		TexturedModel statue2Model = new TexturedModel(OBJLoader.loadObjModel("lotharStatue", loader), new ModelTexture(loader.loadTexture("lotharStatue1")));
+		TexturedModel statue2Model = new TexturedModel(OBJLoader.loadObjModel("/objects/lotharStatue", loader), new ModelTexture(loader.loadTexture("/objects/lotharStatue1")));
 		statue2Model.getTexture().setReflectivity(0.2f);
 		statue2Model.getTexture().setShineDamper(5);
-		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("Chogall", loader), new ModelTexture(loader.loadTexture("Chogall")));
+		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("/objects/Chogall", loader), new ModelTexture(loader.loadTexture("/objects/Chogall")));
 		playerModel.getTexture().setReflectivity(0.2f);
 		playerModel.getTexture().setShineDamper(5);
-		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("bonfire", loader), new ModelTexture(loader.loadTexture("bonfire")));
-		TexturedModel fallenTreeModel = new TexturedModel(OBJLoader.loadObjModel("fallenRedridgeTree", loader), new ModelTexture(loader.loadTexture("fallenRedridgeTree")));
+		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("/objects/bonfire", loader), new ModelTexture(loader.loadTexture("/objects/bonfire")));
+		TexturedModel fallenTreeModel = new TexturedModel(OBJLoader.loadObjModel("/objects/fallenRedridgeTree", loader), new ModelTexture(loader.loadTexture("/objects/fallenRedridgeTree")));
 		
 		//generate Random Entities
 		Random rand = new Random();
@@ -126,7 +118,7 @@ public class Driver {
 			entities.add(playerEntity);
 		
 		//camera and light
-		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+13,198), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer(loader);
 		
