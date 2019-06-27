@@ -11,7 +11,7 @@ public class Camera {
 	private Vector3f position;
 	private float pitch = 20;
 	private float yaw = 180;
-	private float roll;
+	private float roll = 0;
 	private float moveSpeed = 4f;
 	private float lookSpeed = 0.6f;
 	//player stuff
@@ -30,6 +30,9 @@ public class Camera {
 		calculatePitch();
 		calculateAngleAroundPlayer();
 		calculateCamera();
+		
+		if(angleAroundPlayer > 360) angleAroundPlayer -=360;
+		else if(angleAroundPlayer < -360) angleAroundPlayer +=360;
 	}
 	
 	private void calculateCamera() {
@@ -106,6 +109,9 @@ public class Camera {
 	}
 	public float getRoll() {
 		return roll;
+	}
+	public float getAngleAroundPlayer() {
+		return angleAroundPlayer;
 	}
 
 }

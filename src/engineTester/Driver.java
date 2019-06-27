@@ -156,10 +156,7 @@ public class Driver {
 		//game loop
 		while(!Display.isCloseRequested()){
 			//update entities
-			AudioManager.setListenerData(
-					playerEntity.getPosition().x, 
-					playerEntity.getPosition().y, 
-					playerEntity.getPosition().z);
+			AudioManager.setListenerData(camera, (Player)playerEntity);
 			camera.move();
 			boolean underwater = ((Player)playerEntity).move(terrain, water);
 			//light.update();

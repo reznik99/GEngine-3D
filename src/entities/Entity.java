@@ -30,6 +30,8 @@ public class Entity {
 		this.rotX += dx;
 		this.rotY += dy;
 		this.rotZ += dz;
+		if(this.rotY > 360) this.rotY -=360;
+		else if(this.rotY < -360) this.rotY +=360;
 	}		
 	
 
