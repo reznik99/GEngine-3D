@@ -14,6 +14,7 @@ import org.lwjgl.util.vector.Vector4f;
 import entities.Camera;
 import entities.Entity;
 import entities.Light;
+import entities.Player;
 import models.TexturedModel;
 import shaders.StaticShader;
 import shaders.TerrainShader;
@@ -29,12 +30,11 @@ import water.WaterShader;
  */
 public class MasterRenderer {
 	
-	private static final float FOV = 100;
+	private static final float FOV = 90;
 	private static final float NEAR_PLANE = 0.1f;
 	private static final float FAR_PLANE = 1000;
 	
-	private Vector3f skyColor = new Vector3f(0, 0.7f, 0.7f);
-	
+	private Vector3f skyColor = new Vector3f(0, 0.4f, 0.7f);
 	private Matrix4f projectionMatrix;
 	
 	/* shaders and renderers */
@@ -61,7 +61,8 @@ public class MasterRenderer {
 		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 	}
 	
-	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear, boolean underwater) {
+	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear) {
+		boolean underwater = camera.getPlayer().getUnderwater();
 		prepare();
 		//entities
 		shader.start();

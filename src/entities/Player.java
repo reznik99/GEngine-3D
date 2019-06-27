@@ -18,14 +18,19 @@ public class Player extends Entity{
 	private static final float JUMP_POWER = GRAVITY/2;
 	private static final float RUN_SPEED = 40;
 	private static final float SWIM_SPEED = 20;
+	private static final float SHIFT_BOOST = 20;
 	private static final float TURN_SPEED = 160;
+	private static final float MAX_STAMINA = 15;
+	private static final float STAMINA_REGEN = 2;
 	static float PLAYER_HEIGHT = 7;
 
 	private float terrainHeight = 0;
 	private float currentTurnSpeed = 0;
 	private Vector3f speed = new Vector3f(0, 0, 0);
 	private boolean inAir = false;
-	private boolean inWater = false;
+	private boolean underWater = false;
+	private float stamina = 10f;
+	private boolean sprinting;
 
 	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale); //model stuff
@@ -33,11 +38,11 @@ public class Player extends Entity{
 
 	public boolean move(Terrain terrain, WaterTile water) {
 
-		inWater = false;
+		underWater = false;
 		PLAYER_HEIGHT=7;
 		//if head under water
 		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight()) {
-			inWater = true;
+			underWater = true;
 		}
 
 		//sets speeds and angles
@@ -50,10 +55,10 @@ public class Player extends Entity{
 		super.increasePosition(speed.x, 0, speed.z);
 
 		//fall
-		float local_gravity = inWater ? GRAVITY/3 : GRAVITY;
+		float local_gravity = underWater ? GRAVITY/3 : GRAVITY;
 		speed.y -= local_gravity * DisplayManager.getFrameTimeSeconds();
 		super.increasePosition(0, speed.y * DisplayManager.getFrameTimeSeconds(), 0);
-		if(!inAir || inWater)speed.scale(0.95f);//Friction
+		if(!inAir || underWater)speed.scale(0.95f);//Friction
 
 		//collision detection (terrain)
 		if(this.getPosition().y<this.terrainHeight) {
@@ -62,27 +67,35 @@ public class Player extends Entity{
 			inAir = false;
 		}
 
-		return inWater;
+		return underWater;
 	}
 
 	private void jump() {
 		if(!inAir) {
 			speed.y = Player.JUMP_POWER;
 			inAir = true;
-		}else if(inWater) {
+		}else if(underWater) {
 			speed.y += GRAVITY/2 / 60;
 		}
 	}
 
 	private void checkInputs() {
-		float max_speed = inWater ? SWIM_SPEED : RUN_SPEED;
+		float max_speed = underWater ? SWIM_SPEED : RUN_SPEED;
+		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && stamina > 0) {
+			max_speed += SHIFT_BOOST;
+			stamina -= DisplayManager.getFrameTimeSeconds() * 10;
+			sprinting = true;
+		}else {
+			if(stamina < MAX_STAMINA)stamina += DisplayManager.getFrameTimeSeconds() * STAMINA_REGEN;
+			sprinting = false;
+		}
 		float dx = (float) ((max_speed * DisplayManager.getFrameTimeSeconds())
 				* Math.sin(Math.toRadians(super.getRotY())));
 		float dz = (float) ((max_speed * DisplayManager.getFrameTimeSeconds())
 				* Math.cos(Math.toRadians(super.getRotY())));
 
 		//movement
-		if(!inAir || inWater) { //can only move if in water OR if on land NOT jumping
+		if(!inAir || underWater) { //can only move if in water OR if on land NOT while jumping
 			if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
 				speed.x = dx;
 				speed.z = dz;
@@ -92,7 +105,7 @@ public class Player extends Entity{
 			}
 		}
 
-		//jumping
+		//jump
 		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE))
 			this.jump();
 
@@ -103,6 +116,14 @@ public class Player extends Entity{
 			this.currentTurnSpeed = TURN_SPEED;
 		else
 			this.currentTurnSpeed = 0;
+	}
+
+	public boolean getUnderwater() {
+		return underWater;
+	}
+	
+	public boolean getSprinting() {
+		return sprinting;
 	}
 
 }

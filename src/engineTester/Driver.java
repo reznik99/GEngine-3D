@@ -158,7 +158,7 @@ public class Driver {
 			//update entities
 			AudioManager.setListenerData(camera, (Player)playerEntity);
 			camera.move();
-			boolean underwater = ((Player)playerEntity).move(terrain, water);
+			((Player)playerEntity).move(terrain, water);
 			//light.update();
 			
 			//Load Entities and terrain for rendering
@@ -172,26 +172,21 @@ public class Driver {
 			float distance = 2 * (camera.getPosition().y - water.getHeight());
 			camera.getPosition().y -= distance;
 			camera.setPitch(-camera.getPitch());
-			
-			renderer.render(light, camera, reflectionClipPlane, false, false);
-			
+			renderer.render(light, camera, reflectionClipPlane, false);
 			camera.getPosition().y += distance;
 			camera.setPitch(-camera.getPitch());
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE0);
 			fbos.unbindCurrentFrameBuffer();
-			/* END REFLECTION */
+
 			/* REFRACTION */
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE1);
 			fbos.bindRefractionFrameBuffer();
-			
-			renderer.render(light, camera, refractionClipPlane, false, false);
-			
+			renderer.render(light, camera, refractionClipPlane, false);
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE1);
 			fbos.unbindCurrentFrameBuffer();
-			/* END REFRACTION */
 
 			//render and clear buffers
-			renderer.render(light, camera, reflectionClipPlane, true, underwater);	 
+			renderer.render(light, camera, reflectionClipPlane, true);	 
 			//render water
 			waterRenderer.render(water, camera);
 			//update

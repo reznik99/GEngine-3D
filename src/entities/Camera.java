@@ -113,5 +113,8 @@ public class Camera {
 	public float getAngleAroundPlayer() {
 		return angleAroundPlayer;
 	}
+	public Player getPlayer() {
+		return player;
+	}
 
 }
