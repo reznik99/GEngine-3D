@@ -12,6 +12,7 @@
   * Water Reflection AND Refraction AND Normal mapped waves
   * Simple underwater effects(slow, blue hue)
   * HeightMap Terrain Generation
+  * Skybox
   * Multi-texturing
   * Mip mapping
   * Backface culling
@@ -22,10 +23,9 @@
 
 
 ## To be implemented:
-  * Water waves (vertex)
+  * Vertex based water
   * Water collision
   * Shadow shader
-  * Skybox
   * OBJ Collision
   * Particle Shader
   * Networking?
