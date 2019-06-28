@@ -14,6 +14,7 @@ import entities.Camera;
 import entities.Entity;
 import entities.Light;
 import entities.Player;
+import entities.Shark;
 import models.TexturedModel;
 import renderEngine.DisplayManager;
 import renderEngine.Loader;
@@ -55,21 +56,17 @@ public class Driver {
 		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("/objects/Palm2LowPoly", loader), new ModelTexture(loader.loadTexture("/objects/Palm2")));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/grassTexture")));
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/flower")));
-		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("/objects/rock", loader), new ModelTexture(loader.loadTexture("/objects/metal")));
-		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("/objects/tower1", loader), new ModelTexture(loader.loadTexture("/objects/tower1")));
-		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("/objects/alliance_statue", loader), new ModelTexture(loader.loadTexture("/objects/alliance_statue")));
-		statueModel.getTexture().setReflectivity(1);
-		statueModel.getTexture().setShineDamper(5);
-		TexturedModel statue2Model = new TexturedModel(OBJLoader.loadObjModel("/objects/lotharStatue", loader), new ModelTexture(loader.loadTexture("/objects/lotharStatue1")));
-		statue2Model.getTexture().setReflectivity(0.2f);
-		statue2Model.getTexture().setShineDamper(5);
+		TexturedModel rockModel = new TexturedModel(OBJLoader.loadObjModel("/objects/rock", loader), new ModelTexture(loader.loadTexture("/objects/metal")));
+		TexturedModel towerModel = new TexturedModel(OBJLoader.loadObjModel("/objects/tower1", loader), new ModelTexture(loader.loadTexture("/objects/tower1")));
+		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("/objects/bonfire", loader), new ModelTexture(loader.loadTexture("/objects/bonfire")));
+		
 		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("/objects/Chogall", loader), new ModelTexture(loader.loadTexture("/objects/Chogall")));
 		playerModel.getTexture().setReflectivity(0.2f);
 		playerModel.getTexture().setShineDamper(5);
-		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("/objects/bonfire", loader), new ModelTexture(loader.loadTexture("/objects/bonfire")));
-		TexturedModel fallenTreeModel = new TexturedModel(OBJLoader.loadObjModel("/objects/fallenRedridgeTree", loader), new ModelTexture(loader.loadTexture("/objects/fallenRedridgeTree")));
 		
-		//generate Random Entities
+		TexturedModel sharkModel = new TexturedModel(OBJLoader.loadObjModel("/objects/shark", loader), new ModelTexture(loader.loadTexture("/objects/shark")));
+		
+		/* Randomized Entities */
 		Random rand = new Random();
 		for(int i=0; i<500; i++) {
 			float x = rand.nextFloat()*Terrain.SIZE;
@@ -77,28 +74,39 @@ public class Driver {
 			float y = terrain.getHeightAt(x, z);
 			float scale = rand.nextFloat()*1f + 3f;
 			while(y<water.getHeight()) {
-				x = rand.nextFloat()*Terrain.SIZE;
-				z = rand.nextFloat()*Terrain.SIZE;
+				x = rand.nextFloat()*Terrain.SIZE;z = rand.nextFloat()*Terrain.SIZE;
 				y = terrain.getHeightAt(x, z);
 			}
 			Vector3f position = new Vector3f(x , y, z);
 			TexturedModel model = y>water.getHeight()+25 ? treeModel : palmModel;
 			if(i<250) {
 				if(y>water.getHeight()+20) continue;
-				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
+				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rockModel : flower;
 				scale = rand.nextFloat()*1f + 1f;
 			}
 			if(model == palmModel) scale = rand.nextFloat()*2f + 1f;
-			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360, 0, scale);
-			
+			Entity entity = new Entity(model, position, 0, rand.nextFloat()*360, rand.nextFloat()*10 - 5, scale);
 			entities.add(entity);
 		}
 		
-		//hardCoded Entities
-		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,8f);
-		Entity towerEntity2 = new Entity(tower, new Vector3f(650, terrain.getHeightAt(650, 300), 300), 0,0,0,8f);
+		for(int i=0; i<25; i++) {
+			float x = rand.nextFloat()*Terrain.SIZE;
+			float z = rand.nextFloat()*Terrain.SIZE;
+			float waterDepth = water.getHeight()-terrain.getHeightAt(x, z);
+			while(waterDepth < Shark.SHALLOW_WATER_LIMIT) {
+				x = rand.nextFloat()*Terrain.SIZE;
+				z = rand.nextFloat()*Terrain.SIZE;
+				waterDepth = water.getHeight()-terrain.getHeightAt(x, z);
+			}
+			float y = terrain.getHeightAt(x, z) + rand.nextFloat()*(waterDepth-3);
+			Shark sharkEntity = new Shark(sharkModel, new Vector3f(x, y, z),0,rand.nextFloat()*360,0,5f);
+			entities.add(sharkEntity);
+		}
+		
+		/* HARDCODED ENTITIES */
+		Entity towerEntity = new Entity(towerModel, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,8f);
+		Entity towerEntity2 = new Entity(towerModel, new Vector3f(650, terrain.getHeightAt(650, 300), 300), 0,0,0,8f);
 		Entity bonfireEntity = new Entity(bonfireModel, new Vector3f(223,terrain.getHeightAt(223, 198),198),0,90,0,2.5f);
-
 		entities.add(bonfireEntity);
 		entities.add(towerEntity);
 		entities.add(towerEntity2);
@@ -110,7 +118,7 @@ public class Driver {
 		
 		//camera and light
 		//Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
-		Light light = new Light(new Vector3f(223, 100, 600), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(223, 150, 600), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer(loader);
 		
@@ -127,9 +135,6 @@ public class Driver {
 		Source playerSource2 = new Source();
 		playerSource2.setVolume(1);
 		playerSource2.setPosition(playerEntity.getPosition());
-		Source playerSource3 = new Source();
-		playerSource3.setVolume(1);
-		playerSource3.setPosition(playerEntity.getPosition());
 		Source bonFireSource = new Source();
 		bonFireSource.setVolume(3);
 		bonFireSource.setLooping(true);
@@ -157,38 +162,20 @@ public class Driver {
 		WaterRenderer waterRenderer = new WaterRenderer(loader, waterShader, renderer.getProjectionMatrix(), fbos);
 		Vector4f reflectionClipPlane = new Vector4f(0, 1, 0, -water.getHeight());
 		Vector4f refractionClipPlane = new Vector4f(0, -1, 0, water.getHeight());
+		
 		//game loop
 		while(!Display.isCloseRequested()){
-			//update entities
-			camera.move();
+			//update player, camera and audio sources
 			Player player = (Player)playerEntity;
-			Vector3f playerPos = player.getPosition();
 			player.move(terrain, water);
-			
-			AudioManager.setListenerData(camera, (Player)playerEntity);
-			playerSource.setPosition(playerPos);
-			playerSource2.setPosition(playerPos);
-			playerSource3.setPosition(playerPos);
-			
-			if(player.getSprinting()) {
-				if(!playerSource.isPLaying())
-					playerSource.play(bufferBreathing);
-			}else
-				playerSource.stop();
-			if(player.getStamina() <=0 && !playerSource3.isPLaying())
-				playerSource3.play(bufferSigh);
-					
-			if(playerPos.y <= water.getHeight()) {
-				if(!playerSource2.isPLaying())
-					playerSource2.play(bufferSwimming);
-			}else
-				playerSource2.stop();
-			
-			//light.update();
-			
+			camera.move();
+			updateAudio(camera, water, playerSource, playerSource2, bufferBreathing, bufferSigh, bufferSwimming);
 			//Load Entities and terrain for rendering
-			for(Entity e : entities)
+			for(Entity e : entities) {
 				renderer.processEntity(e);
+				if(e instanceof Shark)
+					((Shark) e).update(terrain, water, player);
+			}
 			renderer.processTerrain(terrain);
 			
 			/* REFLECTION */
@@ -210,22 +197,51 @@ public class Driver {
 			GL11.glDisable(GL30.GL_CLIP_DISTANCE1);
 			fbos.unbindCurrentFrameBuffer();
 
-			//render and clear buffers
-			renderer.render(light, camera, reflectionClipPlane, true);	 
-			//render water
+			//render terrain, entities and water. Clears buffers.
+			renderer.render(light, camera, reflectionClipPlane, true);
 			waterRenderer.render(water, camera);
 			//update
 			DisplayManager.updateDisplay();
-
 		}
-
+		
 		//clean up
 		bonFireSource.delete();
 		waterShader.cleanUp();
 		loader.cleanUp();
 		renderer.cleanUp();
 		DisplayManager.closeDisplay();
-
+	}
+	
+	/**
+	 * Updates audio listener and sources (dynamic sources only)
+	 * @param camera
+	 * @param water
+	 * @param playerSource
+	 * @param playerSource2
+	 * @param bufferBreathing
+	 * @param bufferSigh
+	 * @param bufferSwimming
+	 */
+	private static void updateAudio(Camera camera, WaterTile water, Source playerSource, Source playerSource2, int bufferBreathing, int bufferSigh, int bufferSwimming) {
+		Player player = camera.getPlayer();
+		Vector3f playerPos = player.getPosition();
+		//update source positions
+		playerSource.setPosition(playerPos);
+		playerSource2.setPosition(playerPos);
+		//update orientation
+		AudioManager.setListenerData(camera, player);
+		
+		if(player.getStamina() <=0 && !playerSource2.isPLaying())
+			playerSource2.play(bufferSigh);
+				
+		if(player.getSprinting()) {
+			if(!playerSource.isPLaying())
+				playerSource.play(bufferBreathing);
+		}else if(playerPos.y <= water.getHeight()) {
+			if(!playerSource.isPLaying())
+				playerSource.play(bufferSwimming);
+		}else
+			playerSource.stop();
 	}
 
 }
