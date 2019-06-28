@@ -12,7 +12,6 @@ public class Camera {
 	private float pitch = 20;
 	private float yaw = 180;
 	private float roll = 0;
-	private float moveSpeed = 4f;
 	private float lookSpeed = 0.6f;
 	//player stuff
 	private float distanceFromPlayer = 0;
@@ -91,9 +90,6 @@ public class Camera {
 	
 	public float getDistanceFromPlayer() {
 		return distanceFromPlayer;
-	}
-	public float getMoveSpeed() {
-		return moveSpeed;
 	}
 	public float getLookSpeed() {
 		return lookSpeed;

@@ -16,13 +16,13 @@ public class Player extends Entity{
 
 	private static final float GRAVITY = 98.1f;
 	private static final float JUMP_POWER = GRAVITY/2;
-	private static final float RUN_SPEED = 40;
+	private static final float RUN_SPEED = 30;
 	private static final float SWIM_SPEED = 20;
 	private static final float SHIFT_BOOST = 20;
 	private static final float TURN_SPEED = 160;
-	private static final float MAX_STAMINA = 15;
-	private static final float STAMINA_REGEN = 2;
-	static float PLAYER_HEIGHT = 7;
+	private static final float MAX_STAMINA = 25;
+	private static final float STAMINA_REGEN = 5;
+	public static float PLAYER_HEIGHT = 7;
 
 	private float terrainHeight = 0;
 	private float currentTurnSpeed = 0;
@@ -86,8 +86,8 @@ public class Player extends Entity{
 			stamina -= DisplayManager.getFrameTimeSeconds() * 10;
 			sprinting = true;
 		}else {
-			if(stamina < MAX_STAMINA)stamina += DisplayManager.getFrameTimeSeconds() * STAMINA_REGEN;
 			sprinting = false;
+			if(stamina < MAX_STAMINA)stamina += DisplayManager.getFrameTimeSeconds() * STAMINA_REGEN;
 		}
 		float dx = (float) ((max_speed * DisplayManager.getFrameTimeSeconds())
 				* Math.sin(Math.toRadians(super.getRotY())));
@@ -121,9 +121,10 @@ public class Player extends Entity{
 	public boolean getUnderwater() {
 		return underWater;
 	}
-	
 	public boolean getSprinting() {
 		return sprinting;
 	}
-
+	public float getStamina() {
+		return stamina;
+	}
 }

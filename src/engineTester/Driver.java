@@ -57,7 +57,6 @@ public class Driver {
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/flower")));
 		TexturedModel rock = new TexturedModel(OBJLoader.loadObjModel("/objects/rock", loader), new ModelTexture(loader.loadTexture("/objects/metal")));
 		TexturedModel tower = new TexturedModel(OBJLoader.loadObjModel("/objects/tower1", loader), new ModelTexture(loader.loadTexture("/objects/tower1")));
-		TexturedModel building = new TexturedModel(OBJLoader.loadObjModel("/objects/building1", loader), new ModelTexture(loader.loadTexture("/objects/metal")));
 		TexturedModel statueModel = new TexturedModel(OBJLoader.loadObjModel("/objects/alliance_statue", loader), new ModelTexture(loader.loadTexture("/objects/alliance_statue")));
 		statueModel.getTexture().setReflectivity(1);
 		statueModel.getTexture().setShineDamper(5);
@@ -72,7 +71,7 @@ public class Driver {
 		
 		//generate Random Entities
 		Random rand = new Random();
-		for(int i=0; i<1000; i++) {
+		for(int i=0; i<500; i++) {
 			float x = rand.nextFloat()*Terrain.SIZE;
 			float z = rand.nextFloat()*Terrain.SIZE;
 			float y = terrain.getHeightAt(x, z);
@@ -84,7 +83,7 @@ public class Driver {
 			}
 			Vector3f position = new Vector3f(x , y, z);
 			TexturedModel model = y>water.getHeight()+25 ? treeModel : palmModel;
-			if(i<750) {
+			if(i<250) {
 				if(y>water.getHeight()+20) continue;
 				model = rand.nextFloat()>0.5 ? grass : rand.nextFloat()>0.5 ? rock : flower;
 				scale = rand.nextFloat()*1f + 1f;
@@ -96,21 +95,13 @@ public class Driver {
 		}
 		
 		//hardCoded Entities
-		Entity buildingEntity = new Entity(building, new Vector3f(125, terrain.getHeightAt(125, 205), 205), 0,180,0,0.25f);
 		Entity towerEntity = new Entity(tower, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,8f);
 		Entity towerEntity2 = new Entity(tower, new Vector3f(650, terrain.getHeightAt(650, 300), 300), 0,0,0,8f);
-		Entity statueEntity = new Entity(statueModel, new Vector3f(465,terrain.getHeightAt(465, 270),270),0,90,0,0.2f);
 		Entity bonfireEntity = new Entity(bonfireModel, new Vector3f(223,terrain.getHeightAt(223, 198),198),0,90,0,2.5f);
-		Entity statueEntity3 = new Entity(statue2Model, new Vector3f(291,terrain.getHeightAt(291, 463)-5,463),0,90,0,2f);
-		Entity fallenTreeEntity = new Entity(fallenTreeModel, new Vector3f(341,terrain.getHeightAt(341, 240),240),0,0,0,5f);
 
-		entities.add(fallenTreeEntity);
-		entities.add(statueEntity3);
 		entities.add(bonfireEntity);
-		entities.add(towerEntity2);
-		entities.add(statueEntity);
-		entities.add(buildingEntity);
 		entities.add(towerEntity);
+		entities.add(towerEntity2);
 		
 		//player
 		Entity playerEntity = new Player(playerModel, new Vector3f(220,terrain.getHeightAt(223, 198)+10,198),0,0,0,3f);
@@ -118,7 +109,8 @@ public class Driver {
 			entities.add(playerEntity);
 		
 		//camera and light
-		Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
+		//Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(223, 100, 600), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer(loader);
 		
@@ -126,6 +118,18 @@ public class Driver {
 		AudioManager.init();
 		int bufferFire = AudioManager.loadSound("audio/bonfire.wav");
 		int bufferAmbient = AudioManager.loadSound("audio/islandAmbient.wav");
+		int bufferBreathing = AudioManager.loadSound("audio/breathing.wav");
+		int bufferSigh = AudioManager.loadSound("audio/sigh.wav");
+		int bufferSwimming = AudioManager.loadSound("audio/swimming.wav");
+		Source playerSource = new Source();
+		playerSource.setVolume(1);
+		playerSource.setPosition(playerEntity.getPosition());
+		Source playerSource2 = new Source();
+		playerSource2.setVolume(1);
+		playerSource2.setPosition(playerEntity.getPosition());
+		Source playerSource3 = new Source();
+		playerSource3.setVolume(1);
+		playerSource3.setPosition(playerEntity.getPosition());
 		Source bonFireSource = new Source();
 		bonFireSource.setVolume(3);
 		bonFireSource.setLooping(true);
@@ -156,9 +160,30 @@ public class Driver {
 		//game loop
 		while(!Display.isCloseRequested()){
 			//update entities
-			AudioManager.setListenerData(camera, (Player)playerEntity);
 			camera.move();
-			((Player)playerEntity).move(terrain, water);
+			Player player = (Player)playerEntity;
+			Vector3f playerPos = player.getPosition();
+			player.move(terrain, water);
+			
+			AudioManager.setListenerData(camera, (Player)playerEntity);
+			playerSource.setPosition(playerPos);
+			playerSource2.setPosition(playerPos);
+			playerSource3.setPosition(playerPos);
+			
+			if(player.getSprinting()) {
+				if(!playerSource.isPLaying())
+					playerSource.play(bufferBreathing);
+			}else
+				playerSource.stop();
+			if(player.getStamina() <=0 && !playerSource3.isPLaying())
+				playerSource3.play(bufferSigh);
+					
+			if(playerPos.y <= water.getHeight()) {
+				if(!playerSource2.isPLaying())
+					playerSource2.play(bufferSwimming);
+			}else
+				playerSource2.stop();
+			
 			//light.update();
 			
 			//Load Entities and terrain for rendering
