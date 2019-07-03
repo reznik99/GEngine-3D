@@ -32,6 +32,8 @@ public class TerrainShader extends ShaderProgram{
 	
 	private int location_plane;
 	private int location_underWater;
+	private int location_toShadowMapSpace;
+	private int location_shadowMap;
 
 	public TerrainShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -67,7 +69,12 @@ public class TerrainShader extends ShaderProgram{
 		location_plane = super.getUniformLocation("plane");
 		
 		location_underWater = super.getUniformLocation("underWater");
-		
+		location_toShadowMapSpace = super.getUniformLocation("toShadowMapSpace");
+		location_shadowMap = super.getUniformLocation("shadowMap");
+	}
+	
+	public void loadToShadowMapSpace(Matrix4f matrix) {
+		super.loadMatrix(location_toShadowMapSpace, matrix);
 	}
 	
 	public void loadUnderWater(boolean underwater) {
@@ -80,6 +87,7 @@ public class TerrainShader extends ShaderProgram{
 		super.loadInt(location_gTexture, 2);
 		super.loadInt(location_bTexture, 3);
 		super.loadInt(location_blendMap, 4);
+		super.loadInt(location_shadowMap, 5);
 	}
 	
 	public void loadClipPlane(Vector4f plane) {

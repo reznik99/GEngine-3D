@@ -118,9 +118,9 @@ public class Driver {
 		
 		//camera and light
 		//Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
-		Light light = new Light(new Vector3f(223, 150, 600), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(4000, 60000, 7000), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
-		MasterRenderer renderer = new MasterRenderer(loader);
+		MasterRenderer renderer = new MasterRenderer(loader, camera);
 		
 		//audio 
 		AudioManager.init();
@@ -178,6 +178,8 @@ public class Driver {
 			}
 			renderer.processTerrain(terrain);
 			
+			/* SHADOW MAP */
+			renderer.renderShadowMap(light);
 			/* REFLECTION */
 			GL11.glEnable(GL30.GL_CLIP_DISTANCE0);
 			fbos.bindReflectionFrameBuffer();
