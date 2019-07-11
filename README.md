@@ -9,6 +9,7 @@
 ## Implemented features:
 
   * Terrain Collision
+  * Shadows
   * Water Reflection AND Refraction AND Normal mapped waves
   * Simple underwater effects(slow, blue hue)
   * HeightMap Terrain Generation
@@ -23,9 +24,9 @@
 
 
 ## To be implemented:
-  * Vertex based water
-  * Water collision
-  * Shadow shader
   * OBJ Collision
   * Particle Shader
   * Networking?
+  * Vertex based water
+  * Water collision
+
