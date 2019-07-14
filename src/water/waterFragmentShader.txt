@@ -13,8 +13,8 @@ uniform sampler2D depthMap;
 uniform float offset;
 
 const float waveStrength = 0.01;
-const vec4 waterColour = vec4(0.0, 0.1, 0.3, 1); //water colour shading
-const float depthVisibility = 150;	//depth which still is transparent
+const vec4 waterColour = vec4(0.0, 0.2, 0.3, 1); //water colour shading
+const float depthVisibility = 50;	//depth which still is transparent
 
 void main(void){
 

@@ -14,22 +14,22 @@ import water.WaterTile;
  */
 public class Player extends Entity{
 
-	private static final float GRAVITY = 98.1f;
-	private static final float JUMP_POWER = GRAVITY/2;
-	private static final float RUN_SPEED = 30;
-	private static final float SWIM_SPEED = 20;
-	private static final float SHIFT_BOOST = 20;
+	private static final float GRAVITY = 9.81f * 2;
+	private static final float JUMP_POWER = GRAVITY/2f;
+	private static final float WALK_SPEED = 5f;
+	private static final float SWIM_SPEED = 3.8f;
+	private static final float RUNNING_SPEED = 8f;
 	private static final float TURN_SPEED = 160;
-	private static final float MAX_STAMINA = 25;
-	private static final float STAMINA_REGEN = 5;
-	public static float PLAYER_HEIGHT = 7;
+	private static final float MAX_STAMINA = 250;
+	private static final float STAMINA_REGEN = 50;
+	public static float PLAYER_HEIGHT = 4;
 
 	private float terrainHeight = 0;
 	private float currentTurnSpeed = 0;
 	private Vector3f speed = new Vector3f(0, 0, 0);
 	private boolean inAir = false;
 	private boolean underWater = false;
-	private float stamina = 10f;
+	private float stamina = MAX_STAMINA;
 	private boolean sprinting;
 
 	public Player(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
@@ -39,10 +39,13 @@ public class Player extends Entity{
 	public boolean move(Terrain terrain, WaterTile water) {
 
 		underWater = false;
-		PLAYER_HEIGHT=7;
+		inAir = false;
 		//if head under water
 		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight()) {
 			underWater = true;
+		}
+		if(this.getPosition().y > terrainHeight) {
+			inAir = true;
 		}
 
 		//sets speeds and angles
@@ -75,15 +78,15 @@ public class Player extends Entity{
 			speed.y = Player.JUMP_POWER;
 			inAir = true;
 		}else if(underWater) {
-			speed.y += GRAVITY/2 / 60;
+			speed.y += GRAVITY/2 * DisplayManager.getFrameTimeSeconds();
 		}
 	}
 
 	private void checkInputs() {
-		float max_speed = underWater ? SWIM_SPEED : RUN_SPEED;
+		float max_speed = underWater ? SWIM_SPEED : WALK_SPEED;
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && stamina > 0) {
-			max_speed += SHIFT_BOOST;
-			stamina -= DisplayManager.getFrameTimeSeconds() * 10;
+			max_speed += RUNNING_SPEED;
+			stamina -= DisplayManager.getFrameTimeSeconds() * 7.5f;
 			sprinting = true;
 		}else {
 			sprinting = false;

@@ -36,6 +36,14 @@ public class Loader {
 	private List<Integer> vbos = new ArrayList<>();
 	private List<Integer> textures = new ArrayList<>();
 	
+	/**
+	 * Loads data into gpu memory
+	 * @param positions of vertices
+	 * @param textureCoords
+	 * @param normals of vertices
+	 * @param indices for drawing polygons
+	 * @return RawModel with VAO id for rendering
+	 */
 	public RawModel loadToVAO(float[] positions, float[] textureCoords, float[] normals, int[] indices) {
 		int vaoID = createVAO();
 		this.bindIndicesBuffer(indices);
@@ -56,9 +64,9 @@ public class Loader {
     }
 	
     /**
-     * For skybox loading.
+     * For loading skybox to gpu.
      * @param textureFiles
-     * @return
+     * @return textureId
      */
     public int loadCubeMap(String[] textureFiles) {
     	int texID = GL11.glGenTextures();

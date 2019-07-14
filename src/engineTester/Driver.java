@@ -38,15 +38,15 @@ public class Driver {
 		Loader loader = new Loader(); //loads up textures and models in VBOs to VAOs
 
 		// *********TERRAIN TEXTURE STUFF***********
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("/terrain/grass"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("/terrain/sand"));
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("/terrain/mud"));
-		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("/terrain/grassFlowers"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("/terrain/grass"));
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("/terrain/rock"));
 
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap");
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap2"));
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap_erangelTest");
 		WaterTile water = new WaterTile(400, 400, 0f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
@@ -104,15 +104,15 @@ public class Driver {
 		}
 		
 		/* HARDCODED ENTITIES */
-		Entity towerEntity = new Entity(towerModel, new Vector3f(65, terrain.getHeightAt(65, 75), 75), 0,0,0,8f);
-		Entity towerEntity2 = new Entity(towerModel, new Vector3f(650, terrain.getHeightAt(650, 300), 300), 0,0,0,8f);
+		Entity towerEntity = new Entity(towerModel, new Vector3f(65, terrain.getHeightAt(65, 75)-10, 75), 0,0,0,8f);
+		Entity towerEntity2 = new Entity(towerModel, new Vector3f(650, terrain.getHeightAt(650, 300)-10, 300), 0,0,0,8f);
 		Entity bonfireEntity = new Entity(bonfireModel, new Vector3f(223,terrain.getHeightAt(223, 198),198),0,90,0,2.5f);
 		entities.add(bonfireEntity);
 		entities.add(towerEntity);
 		entities.add(towerEntity2);
 		
 		//player
-		Entity playerEntity = new Player(playerModel, new Vector3f(220,terrain.getHeightAt(223, 198)+10,198),0,0,0,3f);
+		Entity playerEntity = new Player(playerModel, new Vector3f(Terrain.SIZE/2,terrain.getHeightAt(Terrain.SIZE/2, Terrain.SIZE/2)+10,Terrain.SIZE/2),0,0,0,3f);
 		if(!Camera.FIRST_PERSON)//dont render player if firstPerson
 			entities.add(playerEntity);
 		
@@ -236,10 +236,10 @@ public class Driver {
 		if(player.getStamina() <=0 && !playerSource2.isPLaying())
 			playerSource2.play(bufferSigh);
 				
-		if(player.getSprinting()) {
+		/*if(player.getSprinting()) {
 			if(!playerSource.isPLaying())
 				playerSource.play(bufferBreathing);
-		}else if(playerPos.y <= water.getHeight()) {
+		}else*/ if(playerPos.y <= water.getHeight()) {
 			if(!playerSource.isPLaying())
 				playerSource.play(bufferSwimming);
 		}else
