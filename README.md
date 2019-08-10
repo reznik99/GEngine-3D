@@ -7,34 +7,34 @@
 </p>
 
 ## Implemented features:
-  **Water**
+ #### **Water**
   * Reflection, Refraction, DUDV waves.
   * Simple underwater effects(slow, blue hue).
   * Entities (sharks).
-  <br>**Terrain**
+ #### **Terrain**
   * Procedural Terrain Generation.
   * Shadow Mapping on terrain.
   * Terrain Collision.
-  <br>**Extra**
+ #### **Extra**
   * Skybox.
   * Directional Sound (OpenAL).
   * Simple OBJ loader.
   * Player Camera(FP and 3rdP) & Controls.
 
 ## To be implemented:
-  **Easy**
+ #### **Easy**
   * Shadow casting on Objects.
   * Particle Shader.
   * Networking / Multiple players.
   * Fresnel effect on water.
   * UI renderer.
   * Physical Sun and Day/Night cycle.
-  <br>**Medium**
+ #### **Medium**
   * LOD (Terrain and Objects).
   * Frustum Culling.
   * Cascaded Shadow Mapping.
   * Vertex based water.
   * Better OBJ loader (load multiple texture files per object).
   * Multiple Lights.
-  <br>**Hard**
+ #### **Hard**
   * OBJ Collision.
