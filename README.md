@@ -23,6 +23,7 @@
 
 ## To be implemented:
  #### **Easy**
+  * Percentage Closer Filtering (smoother shadows).
   * Shadow casting on Objects.
   * Particle Shader.
   * Networking / Multiple players.

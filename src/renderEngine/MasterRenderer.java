@@ -41,8 +41,8 @@ public class MasterRenderer {
 	
 	/* shaders and renderers */
 	//entities
-	private StaticShader shader = new StaticShader();
-	private EntityRenderer renderer;
+	private StaticShader entityShader = new StaticShader();
+	private EntityRenderer entityRenderer;
 	//terrain
 	private TerrainRenderer terrainRenderer;
 	private TerrainShader terrainShader = new TerrainShader();
@@ -60,24 +60,32 @@ public class MasterRenderer {
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		createProjectionMatrix();
-		renderer = new EntityRenderer(shader, projectionMatrix);
+		entityRenderer = new EntityRenderer(entityShader, projectionMatrix);
 		terrainRenderer = new TerrainRenderer(terrainShader, projectionMatrix);
 		skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
 		shadowMapRenderer = new ShadowMapMasterRenderer(camera);
 	}
 	
+	/**
+	 * 
+	 * @param sun
+	 * @param camera
+	 * @param clipPlane
+	 * @param clear Boolean to reduce amount of processed entities 
+	 * (in multiple draw calls for other fbos ex. reflections. Load entities in hashmap only once for n renders)
+	 */
 	public void render(Light sun, Camera camera, Vector4f clipPlane, boolean clear) {
 		boolean underwater = camera.getPlayer().getUnderwater();
 		prepare();
 		//entities
-		shader.start();
-		shader.loadUnderWater(underwater);
-		shader.loadSkyColor(skyColor);
-		shader.loadLight(sun);
-		shader.loadViewMatrix(camera);
-		shader.loadClipPlane(clipPlane);
-		renderer.render(entities);
-		shader.stop();
+		entityShader.start();
+		entityShader.loadUnderWater(underwater);
+		entityShader.loadSkyColor(skyColor);
+		entityShader.loadLight(sun);
+		entityShader.loadViewMatrix(camera);
+		entityShader.loadClipPlane(clipPlane);
+		entityRenderer.render(entities);
+		entityShader.stop();
 		//terrain
 		terrainShader.start();
 		terrainShader.loadUnderWater(underwater);
@@ -118,7 +126,7 @@ public class MasterRenderer {
 	}
 	
 	public void cleanUp() {
-		shader.cleanUp();
+		entityShader.cleanUp();
 		terrainShader.cleanUp();
 		shadowMapRenderer.cleanUp();
 	}  

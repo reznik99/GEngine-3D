@@ -3,6 +3,8 @@ package engineTester;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
@@ -46,7 +48,7 @@ public class Driver {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap2"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap_erangelTest");
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap");
 		WaterTile water = new WaterTile(400, 400, 0f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
@@ -118,7 +120,7 @@ public class Driver {
 		
 		//camera and light
 		//Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
-		Light light = new Light(new Vector3f(300, 8000, 7000), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(300000, 8000000, 7000000), new Vector3f(1,0.85f,0.55f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer(loader, camera);
 		
@@ -165,6 +167,7 @@ public class Driver {
 		
 		//game loop
 		while(!Display.isCloseRequested()){
+			renderOptionsListener();
 			//update player, camera and audio sources
 			Player player = (Player)playerEntity;
 			player.move(terrain, water);
@@ -207,13 +210,34 @@ public class Driver {
 		}
 		
 		//clean up
+		cleanUp(bonFireSource, waterShader, loader, renderer);
+	}
+	
+	/**
+	 * Render scene with different options:
+	 * ex. Wireframe
+	 */
+	private static void renderOptionsListener() {
+		if(Keyboard.isKeyDown(Keyboard.KEY_X)) {
+			GL11.glPolygonMode( GL11.GL_FRONT_AND_BACK, GL11.GL_LINE );
+		}else {
+			GL11.glPolygonMode( GL11.GL_FRONT_AND_BACK, GL11.GL_FILL );
+		}
+	}
+	/**
+	 * Clean up before exit
+	 * @param bonFireSource
+	 * @param waterShader
+	 * @param loader
+	 * @param renderer
+	 */
+	private static void cleanUp(Source bonFireSource, WaterShader waterShader, Loader loader, MasterRenderer renderer) {
 		bonFireSource.delete();
 		waterShader.cleanUp();
 		loader.cleanUp();
 		renderer.cleanUp();
 		DisplayManager.closeDisplay();
 	}
-	
 	/**
 	 * Updates audio listener and sources (dynamic sources only)
 	 * @param camera

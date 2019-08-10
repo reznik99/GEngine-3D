@@ -15,14 +15,17 @@ import water.WaterTile;
 public class Player extends Entity{
 
 	private static final float GRAVITY = 9.81f * 2;
-	private static final float JUMP_POWER = GRAVITY/2f;
-	private static final float WALK_SPEED = 5f;
-	private static final float SWIM_SPEED = 3.8f;
-	private static final float RUNNING_SPEED = 8f;
+	private static final float JUMP_POWER = GRAVITY * 0.7f;
+	private static final float WALK_SPEED = 7.3f;
+	private static final float SWIM_SPEED = 5f;
+	private static final float RUNNING_SPEED = 9.2f;
 	private static final float TURN_SPEED = 160;
 	private static final float MAX_STAMINA = 250;
 	private static final float STAMINA_REGEN = 50;
+	private static final float STAMINA_CONSUM_RATE = 50;
 	public static float PLAYER_HEIGHT = 4;
+	private static final float FALL_MULTIPLIER = 2f;
+	private static final float LOW_JUMP_MULTIPLIER = 1f;
 
 	private float terrainHeight = 0;
 	private float currentTurnSpeed = 0;
@@ -37,56 +40,62 @@ public class Player extends Entity{
 	}
 
 	public boolean move(Terrain terrain, WaterTile water) {
-
-		underWater = false;
-		inAir = false;
-		//if head under water
-		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight()) {
-			underWater = true;
-		}
-		if(this.getPosition().y > terrainHeight) {
-			inAir = true;
-		}
-
-		//sets speeds and angles
+	
+		checkAndSetPlayerState(water);
 		this.terrainHeight = terrain.getHeightAt(this.getPosition().x, this.getPosition().z);
 		checkInputs();
 
-		//rotation
-		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(),  0);
-		//movement
-		super.increasePosition(speed.x, 0, speed.z);
-
-		//fall
-		float local_gravity = underWater ? GRAVITY/3 : GRAVITY;
+		/*Update player position and rotation*/
+		float local_gravity = GRAVITY * (speed.y > 0 && Keyboard.isKeyDown(Keyboard.KEY_SPACE) 
+				? LOW_JUMP_MULTIPLIER : FALL_MULTIPLIER); //make jump feel crisp
+		if(underWater) local_gravity = GRAVITY/3; //fake buoyancy
 		speed.y -= local_gravity * DisplayManager.getFrameTimeSeconds();
-		super.increasePosition(0, speed.y * DisplayManager.getFrameTimeSeconds(), 0);
-		if(!inAir || underWater)speed.scale(0.95f);//Friction
-
-		//collision detection (terrain)
-		if(this.getPosition().y<this.terrainHeight) {
-			super.getPosition().y = this.terrainHeight;
-			speed.y = 0;
-			inAir = false;
+		//apply update
+		super.increasePosition(speed.x, speed.y * DisplayManager.getFrameTimeSeconds(), speed.z);
+		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(),  0);
+		
+		if(!inAir || underWater) {//Friction on ground
+			speed.x *=0.95f;
+			speed.z *=0.95f;
 		}
+		collideWithGround();
 
 		return underWater;
 	}
 
+	/**
+	 * Checks if collide with ground and handles it. 
+	 * (reset y speed. set boolean inAir to false)
+	 */
+	private void collideWithGround() {
+		//collision detection (terrain)
+		if(super.getPosition().y<this.terrainHeight) {
+			super.getPosition().y = this.terrainHeight;
+			speed.y = 0;
+			inAir = false;
+		}
+	}
+	
+	/**
+	 * Jump the player
+	 */
 	private void jump() {
 		if(!inAir) {
 			speed.y = Player.JUMP_POWER;
 			inAir = true;
-		}else if(underWater) {
+		}else if(underWater) //swim
 			speed.y += GRAVITY/2 * DisplayManager.getFrameTimeSeconds();
-		}
 	}
 
+	/**
+	 * Sets variables such as speed and rotation speed
+	 * depending on input, also calls jump method.
+	 */
 	private void checkInputs() {
 		float max_speed = underWater ? SWIM_SPEED : WALK_SPEED;
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && stamina > 0) {
 			max_speed += RUNNING_SPEED;
-			stamina -= DisplayManager.getFrameTimeSeconds() * 7.5f;
+			stamina -= DisplayManager.getFrameTimeSeconds() * STAMINA_CONSUM_RATE;
 			sprinting = true;
 		}else {
 			sprinting = false;
@@ -121,6 +130,23 @@ public class Player extends Entity{
 			this.currentTurnSpeed = 0;
 	}
 
+	/**
+	 * check/set new player state
+	 * @param water
+	 */
+	private void checkAndSetPlayerState(WaterTile water) {
+		if(this.getPosition().y + PLAYER_HEIGHT <= water.getHeight())
+			underWater = true;
+		else 
+			underWater = false;
+				
+		if(this.getPosition().y > terrainHeight)
+			inAir = true;
+		else
+			inAir = false;
+	}
+	
+	
 	public boolean getUnderwater() {
 		return underWater;
 	}
