@@ -11,11 +11,11 @@
   * Reflection, Refraction, DUDV waves.
   * Simple underwater effects(slow, blue hue).
   * Entities (sharks).
-  **Terrain**
+  <br>**Terrain**
   * Procedural Terrain Generation.
   * Shadow Mapping on terrain.
   * Terrain Collision.
-  **Extra**
+  <br>**Extra**
   * Skybox.
   * Directional Sound (OpenAL).
   * Simple OBJ loader.
@@ -29,12 +29,12 @@
   * Fresnel effect on water.
   * UI renderer.
   * Physical Sun and Day/Night cycle.
-  **Medium**
+  <br>**Medium**
   * LOD (Terrain and Objects).
   * Frustum Culling.
   * Cascaded Shadow Mapping.
   * Vertex based water.
   * Better OBJ loader (load multiple texture files per object).
   * Multiple Lights.
-  **Hard**
+  <br>**Hard**
   * OBJ Collision.
