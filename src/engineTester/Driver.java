@@ -40,15 +40,18 @@ public class Driver {
 		Loader loader = new Loader(); //loads up textures and models in VBOs to VAOs
 
 		// *********TERRAIN TEXTURE STUFF***********
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("/terrain/sand"));
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("/terrain/mud"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTexture("/terrain/mud"));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTexture("/terrain/rock"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTexture("/terrain/grass"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("/terrain/rock"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTexture("/terrain/sand"));
 
+		backgroundTexture.setShineDamper(1);
+		backgroundTexture.setReflectivity(5);
+		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap2"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap2");
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap_test"));
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap2_scaled");
 		WaterTile water = new WaterTile(400, 400, 0f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
@@ -63,11 +66,8 @@ public class Driver {
 		TexturedModel bonfireModel = new TexturedModel(OBJLoader.loadObjModel("/objects/bonfire", loader), new ModelTexture(loader.loadTexture("/objects/bonfire")));
 		
 		TexturedModel playerModel = new TexturedModel(OBJLoader.loadObjModel("/objects/Chogall", loader), new ModelTexture(loader.loadTexture("/objects/Chogall")));
-		playerModel.getTexture().setReflectivity(0.2f);
-		playerModel.getTexture().setShineDamper(5);
 		
 		TexturedModel sharkModel = new TexturedModel(OBJLoader.loadObjModel("/objects/shark", loader), new ModelTexture(loader.loadTexture("/objects/shark")));
-		
 		/* Randomized Entities */
 		Random rand = new Random();
 		for(int i=0; i<500; i++) {
@@ -120,7 +120,7 @@ public class Driver {
 		
 		//camera and light
 		//Light light = new Light(new Vector3f(223,terrain.getHeightAt(223, 198)+15,198), new Vector3f(1,0.85f,0.55f));
-		Light light = new Light(new Vector3f(300000, 8000000, 7000000), new Vector3f(1,0.85f,0.55f));
+		Light light = new Light(new Vector3f(300000, 8000000, 7000000), new Vector3f(0.75f, 0.7f, 0.6f));
 		Camera camera = new Camera((Player) playerEntity);
 		MasterRenderer renderer = new MasterRenderer(loader, camera);
 		

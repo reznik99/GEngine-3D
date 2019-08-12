@@ -55,8 +55,8 @@ public class Player extends Entity{
 		super.increaseRotation(0, currentTurnSpeed * DisplayManager.getFrameTimeSeconds(),  0);
 		
 		if(!inAir || underWater) {//Friction on ground
-			speed.x *=0.95f;
-			speed.z *=0.95f;
+			speed.x *=0.85f;
+			speed.z *=0.85f;
 		}
 		collideWithGround();
 
