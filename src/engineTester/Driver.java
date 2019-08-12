@@ -48,13 +48,13 @@ public class Driver {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		
 		TerrainTexture blendMap = new TerrainTexture(loader.loadTexture("/terrain/blendMap2"));
-		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap");
+		Terrain terrain = new Terrain(0,0,loader, texturePack, blendMap, "/terrain/heightmap2");
 		WaterTile water = new WaterTile(400, 400, 0f);//bigger than terrain to give island look
 		
 		List<Entity> entities = new ArrayList<Entity>();
 
 		/* LOAD Models and Textures */
-		TexturedModel treeModel = new TexturedModel(OBJLoader.loadObjModel("/objects/pine", loader), new ModelTexture(loader.loadTexture("/objects/pine")));
+		TexturedModel treeModel = new TexturedModel(OBJLoader.loadObjModel("/objects/tree", loader), new ModelTexture(loader.loadTexture("/objects/tree")));
 		TexturedModel palmModel = new TexturedModel(OBJLoader.loadObjModel("/objects/Palm2LowPoly", loader), new ModelTexture(loader.loadTexture("/objects/Palm2")));
 		TexturedModel grass = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/grassTexture")));
 		TexturedModel flower = new TexturedModel(OBJLoader.loadObjModel("/objects/grassModel2", loader), new ModelTexture(loader.loadTexture("/objects/flower")));
